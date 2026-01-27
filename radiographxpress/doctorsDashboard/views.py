@@ -6,6 +6,7 @@ from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
 from radiographxpress.mixins import DoctorRequiredMixin
 from django.contrib.auth import logout
+from django.http import HttpResponse
 
 # Create your views here.
 from django.http import JsonResponse
@@ -209,5 +210,5 @@ def my_profile(request):
     try:
         doctor = ReportingDoctor.objects.get(email=request.user.email)
         return redirect('doctorProfile', pk=doctor.pk)
-    except ReportingDoctor.DoesNotExist:
+    except ReportingDoctor.DoesNotExist:        
         return redirect('/') # Or error page
