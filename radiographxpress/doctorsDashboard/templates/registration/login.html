@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Radiograph Xpress</title>
+    <link rel="stylesheet" href="{% static 'doctorsDashboard/style.css' %}">
+</head>
+
+<body class="login-body">
+    <div class="login-container">
+        <!-- Background Card -->
+        <div class="login-card-bg"></div>
+
+        <!-- Logo -->
+        <img src="{% static 'img/logos/radiographxpress_logo.png' %}" class="login-logo-img"
+            alt="Radiograph Xpress Logo">
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            {% if form.errors %}
+            <div class="error-message">Usuario o contraseña incorrectos.</div>
+            {% endif %}
+            <!-- Username/Email Input -->
+            <input type="email" name="username" class="input-email" placeholder="Ingrese su correo electronico" required
+                id="id_username">
+
+            <!-- Password Input -->
+            <input type="password" name="password" class="input-password" placeholder="Ingrese su contraseña" required
+                id="id_password">
+
+            <!-- Password Toggle Button -->
+            <button type="button" id="togglePassword" class="password-toggle-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 12C1 12 5 4 12 4C19 4 23 12 23 12C23 12 19 20 12 20C5 20 1 12 1 12Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path
+                        d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+            </button>
+
+            <script>
+                const togglePassword = document.querySelector('#togglePassword');
+                const password = document.querySelector('#id_password');
+
+                togglePassword.addEventListener('click', function (e) {
+                    // toggle the type attribute
+                    const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                    password.setAttribute('type', type);
+
+                    // toggle the eye icon color (optional) or icon itself
+                    this.style.color = type === 'password' ? '#939393' : '#000';
+                });
+
+                // Clear inputs if error exists
+                if (form.errors) {
+                    document.getElementById('id_username').value = '';
+                    document.getElementById('id_password').value = '';
+                }
+            </script>
+
+            <!-- Submit Button -->
+            <button type="submit" class="login-submit-btn">
+                Iniciar Sesión
+            </button>
+        </form>
+    </div>
+</body>
+
+</html>

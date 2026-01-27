@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>{% block title %}Radiograph Xpress{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'patientsDashboard/base.css' %}">
+    {% block head %}
+    {% endblock %}
+</head>
+
+<body>
+    <header>
+        <div class="logo">Logo de la Empresa</div>
+        <div class="user-info">
+            <span class="user-name">Bienvenido, {{ user.first_name|default:"Juan" }}</span>
+            <div class="user-avatar">
+                <!-- Placeholder for user image, can be replaced with {{ user.profile_picture.url }} later -->
+                <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Juan' }}&background=random"
+                    alt="Avatar">
+            </div>
+        </div>
+    </header>
+
+    <div class="navigation-controls">
+        <a href="javascript:history.back()" class="back-button" aria-label="Go back">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+            </svg>
+        </a>
+    </div>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2022 Radiograph Xpress. All rights reserved.</p>
+    </footer>
+</body>
+
+</html>

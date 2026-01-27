@@ -1,0 +1,69 @@
+erDiagram
+    PACIENTE ||--o{ ESTUDIO : "undergoes"
+    PACIENTE {
+        int id_paciente PK
+        string nombre
+        string apellidos
+        string password
+        string email
+        string direccion
+        string telefono
+        int id_estudio FK
+        int doctor_asociado FK
+    }
+
+    ESTUDIO ||--|| SOLICITUD : "originates_from"
+    ESTUDIO ||--|| REPORTE : "generates"
+    ESTUDIO {
+        int id_estudio PK
+        string pacs_url "NEW: URL to IFrame (Replaces BLOB)"
+        string status "NEW: 'PENDING' or 'DONE'"
+        boolean email_sent "NEW: True/False"
+        datetime fecha "Date of study"
+        string contraseña
+        int id_solicitud FK
+        int id_reporte FK
+    }
+
+    SOLICITUD {
+        int id_solicitud_estudio PK
+        string email_medico
+        string diagnostico
+        enum estudio_realizado
+        int medico_solicitante FK
+    }
+
+    REPORTE }|--|| DOCTOR : "signed_by"
+    REPORTE {
+        int id_reporte PK
+        text asunto
+        text descripcion_paciente
+        text observaciones
+        text conclusiones
+        text recomendaciones
+        int doctor_encargado FK
+    }
+
+    DOCTOR {
+        int id_doctor PK
+        string nombre
+        string apellidos
+        string email
+        string telefono
+        string universidad_egreso
+        string cedula_profesional
+        string especialidad
+        int id_reporte FK
+    }
+
+    DOCTOR_ASOCIADO {
+        int id_doctor_asociado PK
+        string nombre
+        string apellidos
+        string email
+        string telefono
+        string cedula_profesional
+        string direccion
+    }
+
+    PACIENTE }|--|| DOCTOR_ASOCIADO : "referred_by"

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="user-profile-page">
+    <!-- Navbar is in base.html -->
+
+    <div class="profile-content">
+        <!-- Back Button -->
+        <div class="profile-back-button" onclick="window.history.back()">
+            <!-- Use SVG icon for better scaling -->
+            <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 8l-4 4 4 4M16 12H8"></path>
+            </svg>
+        </div>
+
+        <!-- Header Section -->
+        <div class="profile-header">
+            <img class="doctor-avatar" src="https://placehold.co/270x270"
+                alt="Dr. {{ doctor.name }} {{ doctor.last_name }}">
+            <div class="doctor-info-container">
+                <h2 class="doctor-name">Dr. {{ doctor.name }} {{ doctor.last_name }}</h2>
+                <p class="doctor-email">{{ doctor.email }}</p>
+                <p class="doctor-university">{{ doctor.university }}</p>
+                <p class="doctor-license">Cedula: {{ doctor.professional_id }}</p>
+                <p class="doctor-license">Especialidad: {{ doctor.specialty }}</p>
+            </div>
+        </div>
+
+        <!-- History Table Section -->
+        <div class="history-table-container">
+            <h3 style="font-family: 'Inter', sans-serif; font-weight: 300; font-size: 24px; margin-bottom: 20px;">
+                Historial de Reportes</h3>
+            <table class="history-table">
+                <thead>
+                    <tr class="history-header">
+                        <th class="header-cell patient">Paciente</th>
+                        <th class="header-cell date">Fecha</th>
+                        <th class="header-cell subject">Asunto</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for study in history_studies %}
+                    <tr class="history-row">
+                        <!-- onclick removed as requested for list view only -->
+                        <td class="row-cell patient">{{ study.id_patient.name }} {{ study.id_patient.last_name }}</td>
+                        <td class="row-cell date">{{ study.date|date:"d/m/Y" }}</td>
+                        <td class="row-cell subject">
+                            {% if study.id_report %}
+                            {{ study.id_report.about }}
+                            {% else %}
+                            <span style="color: #999;">Sin asunto</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="row-cell" style="text-align: center; color: #999;">No hay historial de
+                            reportes.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Inline overrides if needed, but styles should be in style.css now */
+    /* Ensure the back button SVG behaves like the img in CSS */
+    .profile-back-button svg {
+        transition: opacity 0.2s ease;
+        cursor: pointer;
+    }
+
+    .profile-back-button:hover svg {
+        opacity: 1;
+        stroke: black;
+    }
+</style>
+{% endblock %}

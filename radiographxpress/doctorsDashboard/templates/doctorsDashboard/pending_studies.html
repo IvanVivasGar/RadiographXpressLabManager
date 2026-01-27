@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pending-studies-page">
+    <!-- Navbar is in base.html -->
+
+    <div class="pending-studies-content">
+        <div class="page-header">
+            <h1 class="page-title">Estudios Pendientes</h1>
+            <div class="view-toggles">
+                <!-- Buttons are present for visual fidelity, currently static -->
+                <button class="view-toggle-btn" aria-label="List View">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M8 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M8 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M3 6H3.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M3 12H3.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M3 18H3.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+                <button class="view-toggle-btn active" aria-label="Grid View">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 3H10V10H3V3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M14 3H21V10H14V3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M14 14H21V21H14V14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                        <path d="M3 14H10V21H3V14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                            stroke-linejoin="round" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="studies-grid">
+            {% for study in studies %}
+            <a href="{% url 'studyReportCreate' study.pk %}" class="study-card">
+                <!-- iframe preview as requested -->
+                <iframe class="study-card-image" src="{{ study.pacs_url }}" scrolling="no" frameborder="0"></iframe>
+
+                <div class="study-card-overlay"></div>
+                <div class="study-card-info">
+                    <p class="patient-name">{{ study.id_patient.name }} {{ study.id_patient.last_name }}</p>
+                </div>
+            </a>
+            {% empty %}
+            <p style="text-align: center; width: 100%; color: #999;">No hay estudios pendientes.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
