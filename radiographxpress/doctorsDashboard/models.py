@@ -2,6 +2,14 @@ from django.db import models
 
 # Create your models here.
 class Patient(models.Model):
+    MALE = 'M'
+    FEMALE = 'F'
+    OTHER = 'O'
+    GENDER_CHOICES = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+        (OTHER, 'Other'),
+    ]
     id_patient = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
@@ -9,6 +17,7 @@ class Patient(models.Model):
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default=OTHER)
     associated_doctors = models.ManyToManyField('AssociatedDoctor', related_name='patients')
     
 class Study(models.Model):
@@ -16,7 +25,6 @@ class Study(models.Model):
     pacs_url = models.CharField(max_length=100)
     email_sent = models.BooleanField(default=False)
     date = models.DateField()
-    password = models.CharField(max_length=100)
     id_study_request = models.ForeignKey('StudyRequest', on_delete=models.CASCADE)
     id_report = models.ForeignKey('Report', on_delete=models.CASCADE, null=True, blank=True)
     id_patient = models.ForeignKey('Patient', on_delete=models.CASCADE)
@@ -38,6 +46,7 @@ class Report(models.Model):
     findings = models.TextField()
     conclusions = models.TextField()
     recommendations = models.TextField()
+    password = models.CharField(max_length=18, default="")
     doctor_in_charge = models.ForeignKey('ReportingDoctor', on_delete=models.CASCADE)
     
 class AssociatedDoctor(models.Model):
@@ -57,9 +66,18 @@ class StudyRequest(models.Model):
     id_associated_doctor = models.ForeignKey('AssociatedDoctor', on_delete=models.CASCADE)
     
 class ReportingDoctor(models.Model):
+    MALE = 'M'
+    FEMALE = 'F'
+    OTHER = 'O'
+    GENDER_CHOICES = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+        (OTHER, 'Other'),
+    ]
     id_doctor = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default=OTHER)
     password = models.CharField(max_length=100)
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=100)

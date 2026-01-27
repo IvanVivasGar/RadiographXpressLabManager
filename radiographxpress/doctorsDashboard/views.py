@@ -141,11 +141,18 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
         
         # 2. Update status to COMPLETED
         form.instance.status = Report.COMPLETED
+
+        # 3. Generate Secure Password (18 chars)
+        import secrets
+        import string
+        alphabet = string.ascii_letters + string.digits
+        secure_password = ''.join(secrets.choice(alphabet) for i in range(18))
+        form.instance.password = secure_password
         
-        # 3. Save the report
+        # 4. Save the report
         self.object = form.save()
 
-        # 4. Link the new report to the Study
+        # 5. Link the new report to the Study
         self.study.id_report = self.object
         # self.study.status = Study.COMPLETED  <-- REMOVED, FIELD DELETED
         self.study.save()
