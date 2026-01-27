@@ -74,14 +74,14 @@ El proyecto cubre los siguientes requerimientos: <br>
 ## Estructura del proyecto
 
 ## Tecnologías utilizadas
-Front-end: React.js<br>
+Front-end: Django<br>
 Back-end: Django<br>
-Base de datos: (Por Determinar)<br>
+Base de datos: SQLite<br>
 
 ## Interfaces
 
 Figma: https://www.figma.com/design/0c7bCiPXTCz5loS00IP4qp/Radiograph-Xpress?node-id=0-1&t=GVjoagr6QOVNSDf7-1
-AWS Demo:http://radiograph-xpress-interfaces.s3-website-us-east-1.amazonaws.com
+AWS Demo: http://radiograph-xpress-interfaces.s3-website-us-east-1.amazonaws.com
 
 ## Autores y Contacto
 
