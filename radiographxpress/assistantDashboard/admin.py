@@ -1,7 +1,5 @@
 from django.contrib import admin
-from doctorsDashboard.models import Patient, AssociatedDoctor, StudyRequest
+from .models import Assistant, StudyRequest
 
-# Register your models here.
-admin.site.register(Patient)
-admin.site.register(AssociatedDoctor)
+admin.site.register(Assistant)
 admin.site.register(StudyRequest)

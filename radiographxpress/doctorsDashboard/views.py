@@ -1,19 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Patient, Study, Report, AssociatedDoctor, StudyRequest, ReportingDoctor
+from core.models import Study, Report
+from .models import ReportingDoctor
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 from django.urls import reverse_lazy
-from radiographxpress.mixins import DoctorRequiredMixin
+from core.mixins import DoctorRequiredMixin
 from django.contrib.auth import logout
-from django.http import HttpResponse
-
-# Create your views here.
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
 
-# ... (existing imports)
 
 class PendingStudiesView(DoctorRequiredMixin, ListView):
     """
@@ -48,48 +45,6 @@ class StudiesInProgressView(DoctorRequiredMixin, ListView):
             ).order_by('date')
         except ReportingDoctor.DoesNotExist:
             return Study.objects.none()
-
-@require_POST
-@login_required
-def lock_study(request, study_id):
-    """
-    API to lock a study for the current doctor.
-    Creates an empty Report with status IN_PROGRESS.
-    """
-    try:
-        study = Study.objects.get(pk=study_id)
-        doctor = ReportingDoctor.objects.get(email=request.user.email)
-        
-        # Check if already locked
-        if study.id_report and study.id_report.status == Report.IN_PROGRESS:
-            if study.id_report.doctor_in_charge != doctor:
-                 return JsonResponse({'status': 'error', 'message': 'Study already locked by another doctor'}, status=403)
-            else:
-                 return JsonResponse({'status': 'ok', 'message': 'Already locked by you'})
-        
-        # Create new In Progress Report
-        report = Report.objects.create(
-            status=Report.IN_PROGRESS,
-            doctor_in_charge=doctor,
-            about="", 
-            patients_description="",
-            findings="",
-            conclusions="",
-            recommendations=""
-        )
-        
-        # Link to Study
-        study.id_report = report
-        study.save()
-        
-        return JsonResponse({'status': 'ok'})
-        
-    except (Study.DoesNotExist, ReportingDoctor.DoesNotExist):
-        return JsonResponse({'status': 'error', 'message': 'Study or Doctor not found'}, status=404)
-    except Exception as e:
-        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-
-# ... (keep existing DoctorProfileView etc)
 
 class DoctorProfileView(DoctorRequiredMixin, DetailView):
     """
@@ -163,6 +118,46 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
     def get_success_url(self):
         # Redirect back to the pending list after finishing
         return reverse_lazy('pendingStudies')
+
+@require_POST
+@login_required
+def lock_study(request, study_id):
+    """
+    API to lock a study for the current doctor.
+    Creates an empty Report with status IN_PROGRESS.
+    """
+    try:
+        study = Study.objects.get(pk=study_id)
+        doctor = ReportingDoctor.objects.get(email=request.user.email)
+        
+        # Check if already locked
+        if study.id_report and study.id_report.status == Report.IN_PROGRESS:
+            if study.id_report.doctor_in_charge != doctor:
+                 return JsonResponse({'status': 'error', 'message': 'Study already locked by another doctor'}, status=403)
+            else:
+                 return JsonResponse({'status': 'ok', 'message': 'Already locked by you'})
+        
+        # Create new In Progress Report
+        report = Report.objects.create(
+            status=Report.IN_PROGRESS,
+            doctor_in_charge=doctor,
+            about="", 
+            patients_description="",
+            findings="",
+            conclusions="",
+            recommendations=""
+        )
+        
+        # Link to Study
+        study.id_report = report
+        study.save()
+        
+        return JsonResponse({'status': 'ok'})
+        
+    except (Study.DoesNotExist, ReportingDoctor.DoesNotExist):
+        return JsonResponse({'status': 'error', 'message': 'Study or Doctor not found'}, status=404)
+    except Exception as e:
+        return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
 
 def doctor_logout(request):
     """

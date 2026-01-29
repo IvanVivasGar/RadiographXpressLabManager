@@ -14,6 +14,13 @@ class PatientRequiredMixin(UserPassesTestMixin):
     def test_func(self):
         return self.request.user.groups.filter(name='Patients').exists()
 
+class AssociatedDoctorRequiredMixin(UserPassesTestMixin):
+    """
+    Ensures the user is a member of the 'AssociatedDoctors' group.
+    """
+    def test_func(self):
+        return self.request.user.groups.filter(name='AssociatedDoctors').exists()
+
 class AssistantRequiredMixin(UserPassesTestMixin):
     """
     Ensures the user is a member of the 'Assistants' group.

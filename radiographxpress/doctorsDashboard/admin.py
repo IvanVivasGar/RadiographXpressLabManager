@@ -1,7 +1,4 @@
 from django.contrib import admin
-from .models import ReportingDoctor, Report, Study
+from .models import ReportingDoctor
 
-# Register your models here.
 admin.site.register(ReportingDoctor)
-admin.site.register(Report)
-admin.site.register(Study)

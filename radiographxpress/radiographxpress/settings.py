@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'doctorsDashboard.apps.DoctorsdashboardConfig',
     'assistantDashboard.apps.AssistantdashboardConfig',
     'patientsDashboard.apps.PatientsdashboardConfig',
+    'associateDoctorDashboard.apps.AssociatedoctordashboardConfig',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -121,7 +123,7 @@ LOGIN_REDIRECT_URL = 'login_success'
 LOGOUT_REDIRECT_URL = 'home' # or 'login'
 
 AUTHENTICATION_BACKENDS = [
-    'radiographxpress.backends.EmailBackend',
+    'core.backends.EmailBackend',
     'django.contrib.auth.backends.ModelBackend',
 ]
 
