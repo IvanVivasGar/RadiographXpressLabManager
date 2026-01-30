@@ -8,15 +8,6 @@
     <div class="report-content-container">
         <!-- Left Side - Iframe for Study -->
         <div class="image-section">
-            <div class="back-button-container" onclick="window.history.back()">
-                <!-- Using an SVG or FontIcon instead of image for better scaling/loading unless image is strictly required -->
-                <svg width="35" height="35" viewBox="0 0 24 24" fill="none" class="back-button-icon" stroke="white"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M12 8l-4 4 4 4M16 12H8"></path>
-                </svg>
-            </div>
-
             <!-- Iframe for the DICOM Viewer -->
             <iframe src="{{ study.pacs_url }}" class="study-image" frameborder="0" allow="fullscreen"></iframe>
         </div>

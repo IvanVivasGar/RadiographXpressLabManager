@@ -13,49 +13,47 @@
 
     <link rel="stylesheet" href="{% static 'core/css/design-system.css' %}">
     <link rel="stylesheet" href="{% static 'patientsDashboard/base.css' %}">
+    <!-- Reuse doctor styles for navbar/layout consistency -->
+    <link rel="stylesheet" href="{% static 'doctorsDashboard/style.css' %}">
     {% block head %}
     {% endblock %}
 </head>
 
 <body>
-    <header class="main-header">
-        <div class="header-container">
-            <!-- Logo Section -->
-            <div class="brand-logo">
-                <a href="{% url 'patientsDashboard:patientsDashboard' %}">
-                    <img src="{% static 'core/assets/img/logos/radiographxpress_logo.png' %}" alt="Radiograph Xpress">
+    <header>
+        <nav class="navbar">
+            <!-- Left: Logo -->
+            <div class="navbar-left">
+                <img src="{% static 'core/assets/img/logos/radiographxpress_logo.png' %}" alt="Radiograph Xpress"
+                    class="navbar-logo">
+            </div>
+
+            <!-- Center: Navigation Links -->
+            <div class="navbar-center">
+                <ul class="nav-links">
+                    <li><a href="{% url 'patientsDashboard:patientsDashboard' %}" class="nav-link">Mis Estudios</a></li>
+                    <!-- Add more patient-specific links here if needed in the future -->
+                </ul>
+            </div>
+
+            <!-- Right: User Info -->
+            <div class="navbar-right">
+                <a href="{% url 'patientsDashboard:logout' %}" class="nav-link">Cerrar Sesión</a>
+                <a href="{% url 'patientsDashboard:profile' %}" class="user-info" style="text-decoration: none;">
+                    {% if patient %}
+                    <span class="welcome-text">Bienvenido, {{ patient.name }}</span>
+                    {% else %}
+                    <span class="welcome-text">Bienvenido, {{ user.first_name }}</span>
+                    {% endif %}
+                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'User' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
+                        alt="Profile" class="user-avatar">
                 </a>
             </div>
-
-            <!-- Header Actions -->
-            <div class="header-actions">
-                <!-- Logout Section -->
-                <div class="logout-section">
-                    <form action="{% url 'patientsDashboard:logout' %}" method="post">
-                        {% csrf_token %}
-                        <button type="submit" class="logout-btn-text">Cerrar Sesión</button>
-                    </form>
-                </div>
-
-                <!-- Profile Section -->
-                <div class="user-profile-section">
-                    <a href="{% url 'patientsDashboard:profile' %}" class="profile-link">
-                        <div class="text-info">
-                            <span class="greeting">Hola,</span>
-                            <span class="username">{{ user.first_name|default:"Paciente" }}</span>
-                        </div>
-                        <div class="avatar-container">
-                            <!-- Profile Image or Initials Fallback -->
-                            <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'User' }}+{{ user.last_name|default:'' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
-                                alt="Perfil">
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
+        </nav>
+        {% block header %}{% endblock %}
     </header>
 
-    <main class="main-content">
+    <main class="main-content" style="margin-top: 60px;">
         {% block content %}
         {% endblock %}
     </main>

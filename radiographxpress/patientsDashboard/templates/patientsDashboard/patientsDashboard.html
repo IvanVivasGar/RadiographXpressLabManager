@@ -3,5 +3,70 @@
 {% block title %}Pacientes Dashboard{% endblock %}
 
 {% block content %}
-<h1>Pacientes Dashboard</h1>
+<h1>Mis Estudios</h1>
+
+<div class="studies-grid">
+    {% for study in studies %}
+    <a href="{% url 'patientsDashboard:studyDetail' study.id_study %}" class="study-card">
+        <iframe class="study-card-image" src="{{ study.pacs_url }}" scrolling="no" frameborder="0"></iframe>
+
+        <div class="study-card-overlay"></div>
+        <div class="study-card-info">
+            <p class="study-date">{{ study.date|date:"d M Y" }}</p>
+            {% if study.id_report %}
+            <p class="study-about">{{ study.id_report.about }}</p>
+            {% else %}
+            <p class="study-about">Pendiente de reporte</p>
+            {% endif %}
+        </div>
+    </a>
+    {% empty %}
+    <p style="text-align: center; width: 100%; color: #999;">No tienes estudios registrados.</p>
+    {% endfor %}
+</div>
+
+<style>
+    /* Scope styles locally if possible, or add to a css file. For now inline for quick iteration based on request. */
+
+    .studies-grid {
+        margin-top: 2rem;
+        /* Add separation from title */
+    }
+
+    /* Custom text styles for patient dashboard cards, adapting to doctor's card design */
+    .study-date {
+        margin: 0;
+        color: white;
+        font-size: 14px;
+        /* Matches doctor's .welcome-text or similar small text */
+        font-weight: 400;
+        opacity: 0.9;
+        margin-bottom: 4px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .study-about {
+        margin: 0;
+        color: white;
+        font-size: 18px;
+        /* Matches doctor's .patient-name */
+        font-family: 'Inter', sans-serif;
+        font-weight: 400;
+        line-height: 1.4;
+        word-wrap: break-word;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+
+        /* Line clamping */
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    h1 {
+        margin-top: 1rem;
+        margin-bottom: 0;
+    }
+</style>
 {% endblock %}

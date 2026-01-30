@@ -12,9 +12,20 @@ from django.contrib.auth.decorators import login_required
 
 # PATIENT VIEWS
 class PatientDashboardView(PatientRequiredMixin, ListView):
-    model = Patient
+    model = Study
     template_name = 'patientsDashboard/patientsDashboard.html'
-    context_object_name = 'patient'
+    context_object_name = 'studies'
+
+    def get_queryset(self):
+        # We need the patient profile to filter studies
+        if hasattr(self.request.user, 'patient_profile'):
+            patient = self.request.user.patient_profile
+            # Show studies for this patient that have a report (completed diagnosis)
+            return Study.objects.filter(
+                id_patient=patient,
+                id_report__isnull=False
+            ).order_by('-date')
+        return Study.objects.none()
 
 class PatientProfileView(PatientRequiredMixin, DetailView):
     model = Patient
