@@ -13,7 +13,7 @@ from django.contrib.auth.decorators import login_required
 # PATIENT VIEWS
 class PatientDashboardView(PatientRequiredMixin, ListView):
     model = Patient
-    template_name = 'patientsDashboard/patient_dashboard.html'
+    template_name = 'patientsDashboard/patientsDashboard.html'
     context_object_name = 'patient'
 
 class PatientProfileView(PatientRequiredMixin, DetailView):
@@ -22,9 +22,9 @@ class PatientProfileView(PatientRequiredMixin, DetailView):
     context_object_name = 'patient'
 
 @login_required
-def logout(request):
+def patient_logout(request):
     logout(request)
-    return redirect('login')
+    return redirect('patientsDashboard:patients_login')
 
 def signup(request):
     # Placeholder for signup view

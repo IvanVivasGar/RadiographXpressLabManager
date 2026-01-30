@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap');
+
+/* Base Styles */
+body {
+    background-color: #F2F2F2;
+    /* Gray background from mock */
+    font-family: 'Inter', sans-serif;
+}
+
+/* Report Container - The "Paper" */
+.report-container {
+    width: 100%;
+    max-width: 1130px;
+    /* Fixed width from mock */
+    margin: 40px auto;
+    background-color: white;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    position: relative;
+    padding-bottom: 100px;
+    min-height: 1577px;
+    /* From mock, or min-height */
+}
+
+/* 1. Header & Image Section */
+.study-visual-section {
+    width: 100%;
+    height: 500px;
+    /* Fixed height for iframe to fill */
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    overflow: hidden;
+    position: relative;
+}
+
+.study-image {
+    width: 100%;
+    height: auto;
+    max-height: 600px;
+    /* Cap it reasonably */
+    object-fit: contain;
+    display: block;
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 300;
+}
+
+
+/* 2. Content Body */
+.study-report-content {
+    padding: 60px 56px;
+    /* Approx padding to match left:211px vs left:155px offset in mock (~56px relative to paper) */
+    position: relative;
+}
+
+.report-date-top-right {
+    position: absolute;
+    top: 60px;
+    right: 56px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: #000;
+}
+
+/* Typography Scale from Mock */
+/* Title: 32px Light */
+.report-title-main {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: black;
+    margin-bottom: 40px;
+    line-height: 1.2;
+}
+
+/* Section Header: 24px Light */
+.section-title {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 24px;
+    /* "Descripción del paciente" (24px) */
+    color: black;
+    margin-top: 50px;
+    margin-bottom: 20px;
+}
+
+/* Section Header (Large): 32px Light (Conclusion/Recommendations) */
+.section-title-large {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 32px;
+    color: black;
+    margin-top: 60px;
+    margin-bottom: 25px;
+}
+
+/* Body Text: 24px Light (Mock uses 24px for body text too! which is huge, but requested) */
+.section-content {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 24px;
+    color: black;
+    line-height: 1.4;
+    text-align: left;
+    max-width: 1007px;
+    /* From mock text width */
+}
+
+
+/* 3. Signature Section */
+.doctor-signature-section {
+    margin-top: 100px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Center the signature block horizontally within the full width */
+    position: relative;
+    padding-bottom: 50px;
+}
+
+.signature-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.signature-image {
+    width: 213px;
+    /* From mock */
+    height: auto;
+    margin-bottom: 20px;
+    mix-blend-mode: multiply;
+    /* Helps signature blend if white bg */
+}
+
+.doctor-name-sign {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 24px;
+    color: black;
+}
+
+/* ... existing styles ... */
+
+.study-visual-section {
+    width: 100%;
+    height: 500px;
+    background-color: #f0f0f0;
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    /* Interaction cue */
+    transition: opacity 0.2s ease;
+}
+
+.study-visual-section iframe {
+    pointer-events: none;
+    /* Disable interaction in the report view */
+}
+
+.study-visual-section:hover {
+    opacity: 0.95;
+}
+
+/* ... existing signature styles ... */
+
+.doctor-specialty-sign {
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: #444;
+    margin-top: 5px;
+}
+
+/* Modal Styles */
+.pacs-modal-overlay {
+    display: none;
+    /* Hidden by default */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+.pacs-modal-content {
+    width: 90%;
+    height: 90%;
+    background-color: black;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+    border-radius: 8px;
+    overflow: hidden;
+    position: relative;
+}
+
+.pacs-modal-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}

@@ -6,7 +6,6 @@ class Assistant(models.Model):
     id_assistant = models.AutoField(primary_key=True)
     name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    # password field removed
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)

@@ -6,15 +6,6 @@
     <!-- Navbar is in base.html -->
 
     <div class="profile-content">
-        <!-- Back Button -->
-        <div class="profile-back-button" onclick="window.history.back()">
-            <!-- Use SVG icon for better scaling -->
-            <svg width="35" height="35" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                stroke-linecap="round" stroke-linejoin="round" style="opacity: 0.6;">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 8l-4 4 4 4M16 12H8"></path>
-            </svg>
-        </div>
 
         <!-- Header Section -->
         <div class="profile-header">
@@ -43,8 +34,8 @@
                 </thead>
                 <tbody>
                     {% for study in history_studies %}
-                    <tr class="history-row">
-                        <!-- onclick removed as requested for list view only -->
+                    <tr class="history-row" data-href="{% url 'studyDetail' study.id_study %}"
+                        onclick="window.location.href=this.dataset.href;">
                         <td class="row-cell patient">{{ study.id_patient.name }} {{ study.id_patient.last_name }}</td>
                         <td class="row-cell date">{{ study.date|date:"d/m/Y" }}</td>
                         <td class="row-cell subject">

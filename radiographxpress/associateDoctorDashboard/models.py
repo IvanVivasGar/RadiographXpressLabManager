@@ -6,7 +6,6 @@ class AssociateDoctor(models.Model):
     id_associate_doctor = models.CharField(primary_key=True) # Note: CharField PK might cause issues if not managed carefully
     name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    # password field removed
     email = models.EmailField(max_length=100)
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)

@@ -38,11 +38,14 @@ class StudiesInProgressView(DoctorRequiredMixin, ListView):
     def get_queryset(self):
         # Show studies where the report is IN_PROGRESS and handled by THIS doctor
         try:
-            doctor = ReportingDoctor.objects.get(email=self.request.user.email)
-            return Study.objects.filter(
-                id_report__status=Report.IN_PROGRESS,
-                id_report__doctor_in_charge=doctor
-            ).order_by('date')
+            if hasattr(self.request.user, 'reporting_doctor_profile'):
+                doctor = self.request.user.reporting_doctor_profile
+                return Study.objects.filter(
+                    id_report__status=Report.IN_PROGRESS,
+                    id_report__doctor_in_charge=doctor
+                ).order_by('date')
+            else:
+                return Study.objects.none()
         except ReportingDoctor.DoesNotExist:
             return Study.objects.none()
 
@@ -85,15 +88,16 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
 
     def form_valid(self, form):
         # 1. Assign the logged-in doctor
-        # We assume the logged-in Django User's email matches the ReportingDoctor's email
+        # We assume the logged-in Django User is linked to a ReportingDoctor
         try:
-            reporting_doctor = ReportingDoctor.objects.get(email=self.request.user.email)
-            form.instance.doctor_in_charge = reporting_doctor
-        except ReportingDoctor.DoesNotExist:
-            # Handle case where no doctor matches the user (should ideally not happen if data is consistent)
-            # For now, maybe raise error or redirect. In prod, log this.
-            # We'll fail loudly for now so we catch it during dev.
-            raise ValueError(f"No ReportingDoctor found for email {self.request.user.email}")
+            if hasattr(self.request.user, 'reporting_doctor_profile'):
+                reporting_doctor = self.request.user.reporting_doctor_profile
+                form.instance.doctor_in_charge = reporting_doctor
+            else:
+                 raise ValueError(f"No ReportingDoctor profile linked to user {self.request.user.username}")
+        except Exception: 
+            # Should be caught by hasattr check theoretically, but for safety
+            raise ValueError(f"Error accessing profile for user {self.request.user.username}")
         
         # 2. Update status to COMPLETED
         form.instance.status = Report.COMPLETED
@@ -128,7 +132,11 @@ def lock_study(request, study_id):
     """
     try:
         study = Study.objects.get(pk=study_id)
-        doctor = ReportingDoctor.objects.get(email=request.user.email)
+        
+        if not hasattr(request.user, 'reporting_doctor_profile'):
+             return JsonResponse({'status': 'error', 'message': 'Doctor profile not found'}, status=403)
+             
+        doctor = request.user.reporting_doctor_profile
         
         # Check if already locked
         if study.id_report and study.id_report.status == Report.IN_PROGRESS:
@@ -154,7 +162,7 @@ def lock_study(request, study_id):
         
         return JsonResponse({'status': 'ok'})
         
-    except (Study.DoesNotExist, ReportingDoctor.DoesNotExist):
+    except (Study.DoesNotExist, ReportingDoctor.DoesNotExist, AttributeError):
         return JsonResponse({'status': 'error', 'message': 'Study or Doctor not found'}, status=404)
     except Exception as e:
         return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
@@ -166,10 +174,9 @@ def doctor_logout(request):
     """
     if request.user.is_authenticated:
         try:
-            # We use filter().first() or loop because multiple might exist in edge cases
-            doctor_qs = ReportingDoctor.objects.filter(email=request.user.email)
-            if doctor_qs.exists():
-                doctor = doctor_qs.first()
+            # We use the relation to get the profile
+            if hasattr(request.user, 'reporting_doctor_profile'):
+                doctor = request.user.reporting_doctor_profile
                 
                 # Find all reports in progress for this doctor
                 reports_in_progress = Report.objects.filter(
@@ -203,7 +210,11 @@ def my_profile(request):
     Redirects to the profile of the currently logged-in doctor.
     """
     try:
-        doctor = ReportingDoctor.objects.get(email=request.user.email)
-        return redirect('doctorProfile', pk=doctor.pk)
+        if hasattr(request.user, 'reporting_doctor_profile'):
+            doctor = request.user.reporting_doctor_profile
+            return redirect('doctorProfile', pk=doctor.pk)
+        else:
+             # Fallback or error
+             return redirect('/')
     except ReportingDoctor.DoesNotExist:        
         return redirect('/') # Or error page

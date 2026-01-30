@@ -1,42 +1,67 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Radiograph Xpress{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'core/css/design-system.css' %}">
     <link rel="stylesheet" href="{% static 'patientsDashboard/base.css' %}">
     {% block head %}
     {% endblock %}
 </head>
 
 <body>
-    <header>
-        <div class="logo">Logo de la Empresa</div>
-        <div class="user-info">
-            <span class="user-name">Bienvenido, {{ user.first_name|default:"Juan" }}</span>
-            <div class="user-avatar">
-                <!-- Placeholder for user image, can be replaced with {{ user.profile_picture.url }} later -->
-                <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Juan' }}&background=random"
-                    alt="Avatar">
+    <header class="main-header">
+        <div class="header-container">
+            <!-- Logo Section -->
+            <div class="brand-logo">
+                <a href="{% url 'patientsDashboard:patientsDashboard' %}">
+                    <img src="{% static 'core/assets/img/logos/radiographxpress_logo.png' %}" alt="Radiograph Xpress">
+                </a>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="header-actions">
+                <!-- Logout Section -->
+                <div class="logout-section">
+                    <form action="{% url 'patientsDashboard:logout' %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="logout-btn-text">Cerrar Sesión</button>
+                    </form>
+                </div>
+
+                <!-- Profile Section -->
+                <div class="user-profile-section">
+                    <a href="{% url 'patientsDashboard:profile' %}" class="profile-link">
+                        <div class="text-info">
+                            <span class="greeting">Hola,</span>
+                            <span class="username">{{ user.first_name|default:"Paciente" }}</span>
+                        </div>
+                        <div class="avatar-container">
+                            <!-- Profile Image or Initials Fallback -->
+                            <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'User' }}+{{ user.last_name|default:'' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
+                                alt="Perfil">
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </header>
 
-    <div class="navigation-controls">
-        <a href="javascript:history.back()" class="back-button" aria-label="Go back">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-            </svg>
-        </a>
-    </div>
-
-    <main>
+    <main class="main-content">
         {% block content %}
         {% endblock %}
     </main>
-    <footer>
-        <p>&copy; 2022 Radiograph Xpress. All rights reserved.</p>
+
+    <footer class="main-footer">
+        <p>&copy; {% now "Y" %} Radiograph Xpress. Todos los derechos reservados.</p>
     </footer>
 </body>
 

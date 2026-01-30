@@ -1,0 +1,21 @@
+/* core/static/core/css/design-system.css */
+
+:root {
+    /* Brand Colors - Pink Theme */
+    --brand-gradient-start: #E85D9E;
+    --brand-gradient-end: #C2185B;
+    --brand-footer-bg: #880E4F;
+
+    /* Functional Colors */
+    --text-primary: #111827;
+    --text-secondary: #6B7280;
+    --text-white: #ffffff;
+    --bg-page: #F3F4F6;
+    --bg-white: #ffffff;
+
+    /* Typography */
+    --font-primary: 'Inter', sans-serif;
+
+    /* Logo Settings */
+    /* Since logo is now transparent/png, we might just control size */
+}

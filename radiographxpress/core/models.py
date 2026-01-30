@@ -1,4 +1,7 @@
+from django.template.defaultfilters import default
+from django.template.defaultfilters import date
 from django.db import models
+from datetime import datetime
 
 class Study(models.Model):
     id_study = models.AutoField(primary_key=True)
@@ -26,5 +29,6 @@ class Report(models.Model):
     findings = models.TextField()
     conclusions = models.TextField()
     recommendations = models.TextField()
+    date = models.DateField(default=datetime.now)
     password = models.CharField(max_length=18, default="")
     doctor_in_charge = models.ForeignKey('doctorsDashboard.ReportingDoctor', on_delete=models.CASCADE)
