@@ -36,7 +36,7 @@
                     {% for study in history_studies %}
                     <tr class="history-row" data-href="{% url 'studyDetail' study.id_study %}"
                         onclick="window.location.href=this.dataset.href;">
-                        <td class="row-cell patient">{{ study.id_patient.name }} {{ study.id_patient.last_name }}</td>
+                        <td class="row-cell patient">{{ study.id_patient.first_name }} {{ study.id_patient.last_name }}</td>
                         <td class="row-cell date">{{ study.date|date:"d/m/Y" }}</td>
                         <td class="row-cell subject">
                             {% if study.id_report %}

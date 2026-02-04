@@ -1,0 +1,89 @@
+{% extends 'patientsDashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="content-container">
+    <div class="header-section">
+        <h1>Mi Perfil</h1>
+        <p class="subtitle">Información personal</p>
+    </div>
+
+    <div class="card profile-card" style="max-width: 800px; margin: 0 auto;">
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Nombre</label>
+                <div class="info-value">{{ patient.first_name }}</div>
+            </div>
+
+            <div class="form-group">
+                <label>Apellidos</label>
+                <div class="info-value">{{ patient.last_name }}</div>
+            </div>
+
+            <div class="form-group">
+                <label>Correo Electrónico</label>
+                <div class="info-value">{{ patient.email }}</div>
+            </div>
+
+            <div class="form-group">
+                <label>Teléfono</label>
+                <div class="info-value">{{ patient.phone }}</div>
+            </div>
+
+            <div class="form-group full-width">
+                <label>Dirección</label>
+                <div class="info-value">{{ patient.address }}</div>
+            </div>
+
+            <div class="form-group">
+                <label>Género</label>
+                <div class="info-value">{{ patient.get_gender_display }}</div>
+            </div>
+        </div>
+
+        <div class="form-actions" style="margin-top: 2rem; text-align: right;">
+            <a href="{% url 'patientsDashboard:profile_edit' %}" class="btn btn-primary">Actualizar Datos</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .info-value {
+        padding: 0.75rem;
+        border: 1px solid #f0f0f0;
+        background-color: #fafafa;
+        border-radius: 8px;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.95rem;
+        color: #333;
+    }
+
+    .subtitle {
+        color: #666;
+        margin-top: 0.5rem;
+        margin-bottom: 2rem;
+    }
+
+    label {
+        font-weight: 500;
+        color: #666;
+        font-size: 0.875rem;
+    }
+</style>
+{% endblock %}

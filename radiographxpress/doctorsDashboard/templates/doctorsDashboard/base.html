@@ -33,7 +33,7 @@
                 <!-- Use a custom logout view that handles cleanup -->
                 <a href="{% url 'doctor_logout' %}" class="nav-link" id="logoutBtn">Cerrar Sesión</a>
                 <a href="{% url 'myProfile' %}" class="user-info" style="text-decoration: none;">
-                    <span class="welcome-text">Bienvenido, Dr. {{ reporting_doctor.last_name }}</span>
+                    <span class="welcome-text">Bienvenido, Dr. {{ user.last_name }}</span>
                     <img src="https://placehold.co/35x35" alt="Profile" class="user-avatar">
                 </a>
             </div>

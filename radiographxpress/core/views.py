@@ -19,3 +19,7 @@ def login_success(request):
 def study_detail(request, id_study):
     study = get_object_or_404(Study, id_study=id_study)
     return render(request, 'core/study_report_detail.html', {'study': study})
+
+def logout(request):
+    logout(request)
+    return redirect('login')

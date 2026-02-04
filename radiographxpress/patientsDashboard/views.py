@@ -9,6 +9,10 @@ from django.views.generic.detail import DetailView
 from core.mixins import PatientRequiredMixin
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import UpdateView
+from django.urls import reverse_lazy
+from .forms import PatientForm
 
 # PATIENT VIEWS
 class PatientDashboardView(PatientRequiredMixin, ListView):
@@ -29,14 +33,47 @@ class PatientDashboardView(PatientRequiredMixin, ListView):
 
 class PatientProfileView(PatientRequiredMixin, DetailView):
     model = Patient
-    template_name = 'patientsDashboard/patient_profile.html'
+    template_name = 'patientsDashboard/profile.html'
     context_object_name = 'patient'
+
+    def get_object(self):
+        return self.request.user.patient_profile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Mi Perfil'
+        return context
+
+class PatientProfileUpdateView(PatientRequiredMixin, UpdateView):
+    model = Patient
+    form_class = PatientForm
+    template_name = 'patientsDashboard/profile_edit.html'
+    success_url = reverse_lazy('patientsDashboard:profile')
+
+    def get_object(self):
+        return self.request.user.patient_profile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['page_title'] = 'Editar Perfil'
+        return context
 
 @login_required
 def patient_logout(request):
     logout(request)
-    return redirect('patientsDashboard:patients_login')
+    return redirect('login')
+
+from django.contrib.auth import login
+from .forms import PatientSignupForm
 
 def signup(request):
-    # Placeholder for signup view
-    return render(request, 'registration/signup.html') # Placeholder template, might not exist yet
+    if request.method == 'POST':
+        form = PatientSignupForm(request.POST)
+        if form.is_valid():
+            patient = form.save()
+            login(request, patient.user, backend='django.contrib.auth.backends.ModelBackend')
+            return redirect('patientsDashboard:patientsDashboard')
+    else:
+        form = PatientSignupForm()
+    
+    return render(request, 'patientsDashboard/registration/signup.html', {'form': form})

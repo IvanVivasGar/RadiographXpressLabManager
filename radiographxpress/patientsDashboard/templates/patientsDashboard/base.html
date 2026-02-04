@@ -41,7 +41,7 @@
                 <a href="{% url 'patientsDashboard:logout' %}" class="nav-link">Cerrar Sesión</a>
                 <a href="{% url 'patientsDashboard:profile' %}" class="user-info" style="text-decoration: none;">
                     {% if patient %}
-                    <span class="welcome-text">Bienvenido, {{ patient.name }}</span>
+                    <span class="welcome-text">Bienvenido, {{ patient.first_name }}</span>
                     {% else %}
                     <span class="welcome-text">Bienvenido, {{ user.first_name }}</span>
                     {% endif %}

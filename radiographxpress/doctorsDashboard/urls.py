@@ -12,7 +12,4 @@ urlpatterns = [
     path('myProfile/', views.my_profile, name='myProfile'),
     path('studyDetail/<int:id_study>/', core_views.study_detail, name='studyDetail'),
     path('logout/', views.doctor_logout, name='doctor_logout'),
-    path('login/', auth_views.LoginView.as_view(
-        template_name='registration/login.html'
-    ), name='doctor_login'),
 ]

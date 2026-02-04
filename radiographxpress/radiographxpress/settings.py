@@ -127,9 +127,9 @@ USE_TZ = True
 
 
 # Auth settings
-LOGIN_URL = 'doctor_login' # Default to doctor login for now, or build a landing page
+LOGIN_URL = 'login' 
 LOGIN_REDIRECT_URL = 'login_success'
-LOGOUT_REDIRECT_URL = 'home' # or 'login'
+LOGOUT_REDIRECT_URL = 'login'
 
 AUTHENTICATION_BACKENDS = [
     'core.backends.EmailBackend',

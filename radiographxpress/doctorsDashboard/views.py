@@ -202,7 +202,7 @@ def doctor_logout(request):
             print(f"Error during logout cleanup: {e}")
             
     logout(request)
-    return redirect("/")
+    return redirect("login")
 
 @login_required
 def my_profile(request):
@@ -210,11 +210,26 @@ def my_profile(request):
     Redirects to the profile of the currently logged-in doctor.
     """
     try:
+        # Check if the user has a profile
         if hasattr(request.user, 'reporting_doctor_profile'):
             doctor = request.user.reporting_doctor_profile
             return redirect('doctorProfile', pk=doctor.pk)
+        
+        # If user is in Doctors group but has no profile, create one
+        elif request.user.groups.filter(name='Doctors').exists():
+            doctor = ReportingDoctor.objects.create(
+                user=request.user,
+                address="Actualizar Dirección",
+                phone="Actualizar Teléfono",
+                university="Actualizar Universidad",
+                professional_id="Actualizar Cedula",
+                specialty="Actualizar Especialidad"
+            )
+            return redirect('doctorProfile', pk=doctor.pk)
+
         else:
-             # Fallback or error
+             # Fallback: Not a doctor, send to home
              return redirect('/')
-    except ReportingDoctor.DoesNotExist:        
+    except Exception as e:
+        print(f"Error accessing profile: {e}")        
         return redirect('/') # Or error page
