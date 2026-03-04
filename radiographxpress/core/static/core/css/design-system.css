@@ -19,3 +19,25 @@
     /* Logo Settings */
     /* Since logo is now transparent/png, we might just control size */
 }
+
+/* Base layout for footer pushing */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-content {
+    flex: 1;
+}
+
+/* Shared Footer styling */
+.main-footer {
+    background-color: var(--brand-footer-bg);
+    border-top: none;
+    text-align: center;
+    padding: 25px 20px;
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.7);
+    margin-top: auto;
+}

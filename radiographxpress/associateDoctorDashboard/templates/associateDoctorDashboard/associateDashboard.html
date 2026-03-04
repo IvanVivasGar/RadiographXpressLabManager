@@ -1,0 +1,132 @@
+{% extends 'associateDoctorDashboard/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="dashboard-container">
+    <h1 style="margin-bottom: 2rem;">Mis Pacientes</h1>
+
+    {% if patients %}
+    <div class="patients-list">
+        {% for patient in patients %}
+        <div class="patient-section">
+            <!-- Top: Patient Info -->
+            <div class="patient-header">
+                <div class="patient-avatar">
+                    {{ patient.first_name|first }}{{ patient.last_name|first }}
+                </div>
+                <div class="patient-details">
+                    <h3>{{ patient.first_name }} {{ patient.last_name }}</h3>
+                    <span class="patient-meta">{{ patient.gender }} | {{ patient.phone }}</span>
+                </div>
+            </div>
+
+            <!-- Bottom: Studies Carousel -->
+            <div class="studies-carousel-container">
+                {% if patient.study_set.all %}
+                <div class="studies-carousel">
+                    {% for study in patient.study_set.all|dictsortreversed:"date" %} <!-- Ordered by date desc -->
+                        {% url 'studyDetail' study.id_study as study_detail_url %}
+                        {% include "core/components/study_card.html" with study_url=study_detail_url pacs_url=study.pacs_url date=study.date title=study.id_report.about|default:"Pendiente de reporte" status=study.id_report|yesno:"completed,pending" extra_classes="study-card-carousel" %}
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="no-studies">No hay estudios registrados</div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <p>No tienes pacientes asociados actualmente.</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Add shared CSS -->
+<link rel="stylesheet" href="{% static 'core/css/study_card.css' %}">
+
+<style>
+    .studies-carousel .study-card {
+        flex: 0 0 320px;
+        /* Carousel specific sizing override */
+        height: 220px;
+    }
+
+    .patient-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .patient-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .patient-avatar {
+        width: 56px;
+        height: 56px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        font-size: 1.25rem;
+    }
+
+    .patient-details h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+    }
+
+    .patient-meta {
+        font-size: 1rem;
+        color: var(--text-secondary);
+    }
+
+    .studies-carousel-container {
+        overflow: hidden;
+        position: relative;
+        width: 100%;
+    }
+
+    .studies-carousel {
+        display: flex;
+        gap: 1.5rem;
+        overflow-x: auto;
+        padding-bottom: 1rem;
+        padding-top: 0.5rem;
+        scroll-behavior: smooth;
+        scrollbar-width: thin;
+    }
+
+    .studies-carousel::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    .studies-carousel::-webkit-scrollbar-thumb {
+        background-color: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .no-studies {
+        color: var(--text-secondary);
+        font-style: italic;
+        padding: 1rem;
+    }
+</style>
+{% endblock %}

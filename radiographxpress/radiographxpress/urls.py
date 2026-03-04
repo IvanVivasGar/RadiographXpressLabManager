@@ -26,8 +26,9 @@ urlpatterns = [
     path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
     path('doctor/', include('doctorsDashboard.urls')),
     path('patients/', include('patientsDashboard.urls')),
-    #path('associate-doctor/', include('associateDoctorsDashboard.urls')),
+    path('associate-doctor/', include('associateDoctorDashboard.urls')),
     #path('assistant/', include('assistantsDashboard.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login_success/', views.login_success, name='login_success'),
+    path('core/', include('core.urls')),
 ]

@@ -94,8 +94,7 @@
                             <h3>Soy Médico Asociado</h3>
                             <p>Colabora con nosotros y gestiona tus pacientes.</p>
                             <!-- Note: The associate doctor signup URL should be defined in its own app usually -->
-                            <!-- Fallback to a placeholder or assume a URL pattern if not yet defined -->
-                            <a href="/associate-doctor/signup/" class="register-btn doctor-btn">
+                            <a href="{% url 'associate_signup' %}" class="register-btn doctor-btn">
                                 Crear cuenta de Médico
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     stroke-width="2">

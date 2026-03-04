@@ -132,7 +132,53 @@
                 </div>
             </div>
 
+            <!-- Footer Section -->
+            <div class="report-footer-section">
+                <div class="footer-doctor-name">DRA. ALMA EVELIA MORAN GONZÁLEZ</div>
+                <div class="footer-doctor-specialty">MÉDICA RADIÓLOGA</div>
+
+                <div class="footer-details-grid">
+                    <div class="footer-col">
+                        <strong>UNIVERSIDAD NACIONAL AUTÓNOMA DE MÉXICO</strong>
+                        <span>D.G.P. 1138215</span>
+                    </div>
+                    <div class="footer-col">
+                        <strong>UNIVERSIDAD DE GUANAJUATO</strong>
+                        <span>CÉDULA DE ESPECIALIDAD AEIE-31312</span>
+                    </div>
+                    <div class="footer-col">
+                        <strong>SUB-ESPECIALISTA EN ULTRASONIDO</strong>
+                        <span>CERTIFICADA POR EL C.M.R.I. FOLIO 2090<br>
+                            CALIFICACIÓN AGREGADA EN MAMA C.M.R.I. 3465</span>
+                    </div>
+                </div>
+
+                <div class="footer-contact-info">
+                    <div class="contact-item"><strong>DIRECCIÓN:</strong> AVENIDA LEÓN 428 INT. 403, COL. JARDINES DEL
+                        MORAL</div>
+                    <div class="contact-item"><strong>TEL:</strong> 477 636 76 94 / 95</div>
+                    <div class="contact-item"><strong>WHATSAPP:</strong> 477 180 01 46</div>
+                </div>
+            </div>
         </div>
+        <!-- Download PDF Button (only for completed reports and authorized users) -->
+        {% if study.id_report.status == 'COM' and not hide_download_btn %}
+        <div class="download-pdf-section" style="margin-top: 40px; text-align: center; padding-bottom: 30px;">
+            <a href="{% url 'core:report_pdf' study.id_report.id_report %}" class="download-pdf-btn" style="display: inline-flex; align-items: center; gap: 10px; padding: 14px 28px; 
+                        background-color: #1a1a1a; color: white; text-decoration: none; 
+                        border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 15px; 
+                        font-weight: 500; transition: background-color 0.2s ease, transform 0.2s ease;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                Descargar Reporte PDF
+            </a>
+        </div>
+        {% endif %}
     </div>
     </div>
 

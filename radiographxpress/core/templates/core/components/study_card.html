@@ -1,0 +1,23 @@
+<a href="{{ study_url }}" class="study-card {{ extra_classes }}">
+    <iframe class="study-card-image" src="{{ pacs_url }}" scrolling="no" frameborder="0"></iframe>
+    <div class="study-card-overlay"></div>
+    <div class="study-card-info">
+        {% if date %}
+        <p class="study-date">{{ date|date:"d M Y" }}</p>
+        {% endif %}
+
+        <p class="patient-name">{{ title }}</p>
+
+        {% if subtitle %}
+        <p class="study-date" style="font-size: 13px; opacity: 0.8;">{{ subtitle }}</p>
+        {% endif %}
+
+        {% if status %}
+        {% if status == 'completed' %}
+        <span class="status-badge completed">Completado</span>
+        {% elif status == 'pending' %}
+        <span class="status-badge pending">Pendiente</span>
+        {% endif %}
+        {% endif %}
+    </div>
+</a>

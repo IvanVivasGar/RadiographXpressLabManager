@@ -141,13 +141,3 @@ body {
     padding: 40px 30px;
     box-sizing: border-box;
 }
-
-/* Footer */
-.main-footer {
-    background-color: var(--brand-footer-bg);
-    border-top: none;
-    text-align: center;
-    padding: 25px 20px;
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.7);
-}

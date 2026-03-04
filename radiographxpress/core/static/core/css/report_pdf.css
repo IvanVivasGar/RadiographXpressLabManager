@@ -1,0 +1,196 @@
+@page {
+    size: A4;
+    margin: 2cm;
+}
+
+body {
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.5;
+    color: #000;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+/* ─── Background Image ─── */
+.bg-layer {
+    position: absolute;
+    top: -2cm;
+    left: -2cm;
+    width: 210mm;
+    height: 297mm;
+    z-index: -1;
+}
+
+.bg-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* ─── Logo ─── */
+.logo-container {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
+.main-logo {
+    width: 280px;
+    height: auto;
+    object-fit: contain;
+}
+
+/* ─── Patient & Doctor Metadata (Right Aligned) ─── */
+.patient-doc-meta {
+    text-align: right;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 10pt;
+    line-height: 1.6;
+}
+
+.patient-doc-meta .meta-line {
+    margin: 0;
+}
+
+/* ─── Report Title (Centered, Bold) ─── */
+.report-title {
+    font-weight: bold;
+    font-size: 11pt;
+    text-align: center;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ─── Patient Description (Italic, Smaller) ─── */
+.report-description {
+    font-size: 9.5pt;
+    font-style: italic;
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+/* ─── Content Sections ─── */
+.report-section {
+    margin-bottom: 18px;
+    text-align: justify;
+    font-size: 10pt;
+    line-height: 1.5;
+}
+
+.report-section p {
+    margin: 0 0 8px 0;
+}
+
+.findings-section {
+    margin-bottom: 20px;
+}
+
+/* ─── Section Titles (CONCLUSIÓN etc.) ─── */
+.section-title {
+    font-weight: bold;
+    font-size: 10.5pt;
+    margin-bottom: 8px;
+    margin-top: 10px;
+    text-transform: uppercase;
+}
+
+/* ─── Footer: pinned to bottom of page ─── */
+.report-footer {
+    text-align: center;
+    margin-top: 40px;
+    position: relative;
+}
+
+/* ─── Doctor Signature Block ─── */
+.doctor-signature {
+    margin-bottom: 10px;
+}
+
+.doctor-signature .name {
+    font-weight: bold;
+    font-size: 11pt;
+    margin: 0 0 2px 0;
+}
+
+.doctor-signature .title {
+    font-size: 9pt;
+    margin: 0;
+    color: #111;
+}
+
+/* ─── Hardcoded Credentials ─── */
+.doctor-footer-text {
+    width: 100%;
+    text-align: center;
+    margin-top: 15px;
+    color: #000;
+    line-height: 1.4;
+}
+
+.doctor-footer-title {
+    font-size: 14pt;
+    font-weight: bold;
+    margin-bottom: 0;
+    color: #000;
+    letter-spacing: 0.3px;
+}
+
+.doctor-footer-subtitle {
+    font-size: 9pt;
+    font-weight: normal;
+    margin-bottom: 8px;
+    letter-spacing: 0.8px;
+}
+
+.footer-table {
+    width: 100%;
+    margin: 5px auto;
+    border-collapse: collapse;
+}
+
+.footer-table td {
+    width: 50%;
+    text-align: center;
+    vertical-align: top;
+    padding: 0 8px;
+}
+
+.footer-table .uni-name {
+    font-size: 7.5pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.2px;
+}
+
+.footer-table .uni-detail {
+    font-size: 7.5pt;
+    font-weight: normal;
+}
+
+.doctor-footer-info {
+    font-size: 8pt;
+    font-weight: bold;
+    margin: 6px 0 4px 0;
+    line-height: 1.5;
+    letter-spacing: 0.2px;
+}
+
+/* ─── Contact Bar (very bottom) ─── */
+.footer-contact {
+    margin-top: 8px;
+    font-size: 8pt;
+    font-weight: bold;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+.footer-contact .contact-sep {
+    margin-left: 20px;
+}

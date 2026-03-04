@@ -71,8 +71,8 @@ def signup(request):
         form = PatientSignupForm(request.POST)
         if form.is_valid():
             patient = form.save()
-            login(request, patient.user, backend='django.contrib.auth.backends.ModelBackend')
-            return redirect('patientsDashboard:patientsDashboard')
+            # login(request, patient.user, backend='django.contrib.auth.backends.ModelBackend') # User requested no auto-login
+            return redirect('login')
     else:
         form = PatientSignupForm()
     

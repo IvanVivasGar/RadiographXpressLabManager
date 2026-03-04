@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Radiograph Xpress - Asistente{% endblock %}</title>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'core/css/design-system.css' %}">
+    <!-- Reuse doctor styles for consistency -->
+    <link rel="stylesheet" href="{% static 'doctorsDashboard/style.css' %}">
+
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="navbar-left">
+                <img src="{% static 'core/assets/img/logos/radiographxpress_logo.png' %}" alt="Radiograph Xpress"
+                    class="navbar-logo">
+            </div>
+
+            <div class="navbar-center">
+                <!-- Navigation links placeholder -->
+                <span style="font-weight: 500; color: var(--text-white);">Portal de Asistentes</span>
+                <a href="{% url 'assistant_dashboard' %}" class="nav-link">Inicio</a>
+            </div>
+
+            <div class="navbar-right">
+                <a href="{% url 'login' %}" class="nav-link">Cerrar Sesión</a>
+                <div class="user-info">
+                    {% if user.assistant_profile %}
+                    <span class="welcome-text">{{ user.last_name }}</span>
+                    {% else %}
+                    <span class="welcome-text">{{ user.username }}</span>
+                    {% endif %}
+                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Asistente' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
+                        alt="Profile" class="user-avatar">
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="main-content" style="margin-top: 80px; padding: 2rem;">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    {% include 'core/components/footer.html' %}
+</body>
+
+</html>

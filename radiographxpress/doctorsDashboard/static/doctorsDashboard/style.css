@@ -350,6 +350,11 @@ button.nav-link {
     border-color: #000;
 }
 
+.view-toggle-btn.active img {
+    filter: invert(1) brightness(2);
+    /* Make icon white */
+}
+
 .studies-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
