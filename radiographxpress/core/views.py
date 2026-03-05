@@ -84,7 +84,6 @@ def generate_report_pdf(request, report_id):
         return HttpResponse("No study associated with this report.", status=404)
     
     patient = study.id_patient
-    doctor = report.doctor_in_charge
     
     # Explicitly block doctors and associate doctors from downloading PDFs to protect patient data
     if request.user.groups.filter(name__in=['AssociatedDoctors', 'Doctors']).exists():
@@ -101,13 +100,29 @@ def generate_report_pdf(request, report_id):
     if report.status != Report.COMPLETED:
         return HttpResponse("Report is not yet completed.", status=400)
     
-    # Load CSS and wrap in <style> tags so the template doesn't need {{ css|safe }}
-    # inside a <style> element (Prettier reformats that and breaks Django template tags)
+    # Generate unprotected PDF for platform download
+    pdf = generate_pdf_bytes(report, study)
+    
+    # Return PDF response
+    response = HttpResponse(pdf, content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="reporte_{report.id_report}.pdf"'
+    return response
+
+
+def generate_pdf_bytes(report, study):
+    """
+    Generate PDF bytes for a report. Reusable by both the download view
+    and the email service.
+    """
+    patient = study.id_patient
+    doctor = report.doctor_in_charge
+    
+    # Load CSS
     css_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'core', 'css', 'report_pdf.css')
     with open(css_path, 'r') as f:
         css_content = f.read()
     
-    # Load background image dynamically safely to avoid Weasyprint local fetch blocks
+    # Load background image
     bg_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'core', 'assets', 'img', 'background', 'report_background.png')
     with open(bg_path, "rb") as image_file:
         bg_base64 = base64.b64encode(image_file.read()).decode('utf-8')
@@ -142,9 +157,4 @@ def generate_report_pdf(request, report_id):
     
     # Generate PDF
     html = HTML(string=html_string)
-    pdf = html.write_pdf()
-    
-    # Return PDF response
-    response = HttpResponse(pdf, content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="reporte_{report.id_report}.pdf"'
-    return response
+    return html.write_pdf()

@@ -30,5 +30,4 @@ class Report(models.Model):
     conclusions = models.TextField()
     recommendations = models.TextField()
     date = models.DateField(default=datetime.now)
-    password = models.CharField(max_length=18, default="")
     doctor_in_charge = models.ForeignKey('doctorsDashboard.ReportingDoctor', on_delete=models.CASCADE)

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Ticket - Radiograph Xpress</title>
+    <style>
+        @media print {
+            body {
+                margin: 0;
+            }
+
+            .no-print {
+                display: none;
+            }
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            max-width: 300px;
+            margin: 40px auto;
+            padding: 20px;
+            border: 2px dashed #ccc;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 16px;
+            margin: 0 0 5px;
+            letter-spacing: 1px;
+        }
+
+        .subtitle {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed #aaa;
+            margin: 12px 0;
+        }
+
+        .field {
+            text-align: left;
+            font-size: 11px;
+            margin: 4px 0;
+        }
+
+        .field strong {
+            display: inline-block;
+            width: 100px;
+        }
+
+        .password-box {
+            margin: 15px 0;
+            padding: 12px;
+            background: #f9f9f9;
+            border: 2px solid #333;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 3px;
+        }
+
+        .password-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .footer-note {
+            font-size: 9px;
+            color: #888;
+            margin-top: 15px;
+            line-height: 1.4;
+        }
+
+        .print-btn {
+            margin-top: 20px;
+            padding: 8px 24px;
+            background: #C2185B;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .print-btn:hover {
+            background: #880E4F;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>RADIOGRAPH XPRESS</h1>
+    <div class="subtitle">TICKET DE ESTUDIO</div>
+    <hr>
+    <div class="field"><strong>Paciente:</strong> {{ study_request.id_patient.first_name }} {{ study_request.id_patient.last_name }}</div>
+    <div class="field"><strong>Estudio:</strong> {{ study_request.requested_study }}</div>
+    <div class="field"><strong>Diagnóstico:</strong> {{ study_request.diagnosis }}</div>
+    <hr>
+    <div class="password-label">Contraseña para tu reporte PDF</div>
+    <div class="password-box">{{ study_request.pdf_password }}</div>
+    <hr>
+    <div class="footer-note">
+        Conserva este ticket. Necesitarás la contraseña para abrir el reporte PDF que recibirás por correo electrónico.
+    </div>
+
+    <button class="print-btn no-print" onclick="window.print()">🖨️ Imprimir</button>
+</body>
+
+</html>

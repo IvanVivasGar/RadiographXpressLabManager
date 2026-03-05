@@ -27,7 +27,7 @@ urlpatterns = [
     path('doctor/', include('doctorsDashboard.urls')),
     path('patients/', include('patientsDashboard.urls')),
     path('associate-doctor/', include('associateDoctorDashboard.urls')),
-    #path('assistant/', include('assistantsDashboard.urls')),
+    path('assistant/', include('assistantDashboard.urls')),
     path('accounts/', include('django.contrib.auth.urls')),
     path('login_success/', views.login_success, name='login_success'),
     path('core/', include('core.urls')),

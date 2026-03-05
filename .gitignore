@@ -36,3 +36,7 @@ db.sqlite3-journal
 
 # MacOS
 .DS_Store
+
+# Private Documentation
+Raditech_API_Documentation/
+Business_Material/

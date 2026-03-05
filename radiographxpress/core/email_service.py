@@ -68,24 +68,66 @@ def send_welcome_email(user):
 
 
 def send_study_completed_email(study):
-    """Notify the patient that their study report is ready."""
+    """Notify the patient that their study report is ready, with encrypted PDF attached."""
+    from django.core.mail import EmailMessage
+    import pikepdf
+    import io
+    from .views import generate_pdf_bytes
+    
     patient = study.id_patient
     if not patient.user or not patient.user.email:
+        return
+    
+    report = study.id_report
+    if not report:
         return
     
     subject = 'Tu estudio está listo — Radiograph Xpress'
     html_message = render_to_string('core/emails/study_completed_email.html', {
         'patient': patient,
         'study': study,
-        'report': study.id_report,
+        'report': report,
     })
     plain_message = strip_tags(html_message)
     
-    send_mail(
+    # Build the email
+    email = EmailMessage(
         subject,
         plain_message,
         settings.DEFAULT_FROM_EMAIL,
         [patient.user.email],
-        html_message=html_message,
-        fail_silently=False,
     )
+    email.content_subtype = 'html'
+    email.body = html_message
+    
+    # Generate and encrypt the PDF
+    try:
+        pdf_bytes = generate_pdf_bytes(report, study)
+        
+        # Encrypt PDF with pikepdf using the StudyRequest password
+        password = study.id_study_request.pdf_password
+        input_pdf = io.BytesIO(pdf_bytes)
+        output_pdf = io.BytesIO()
+        
+        with pikepdf.open(input_pdf) as pdf:
+            pdf.save(
+                output_pdf,
+                encryption=pikepdf.Encryption(
+                    owner=password,
+                    user=password,
+                    aes=True,
+                    R=6,  # AES-256
+                )
+            )
+        
+        output_pdf.seek(0)
+        email.attach(
+            f'reporte_{report.id_report}.pdf',
+            output_pdf.read(),
+            'application/pdf'
+        )
+    except Exception as e:
+        print(f"Error generating/encrypting PDF for email: {e}")
+        # Still send the email without attachment
+    
+    email.send(fail_silently=False)
