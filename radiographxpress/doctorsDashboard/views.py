@@ -114,8 +114,17 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
 
         # 5. Link the new report to the Study
         self.study.id_report = self.object
-        # self.study.status = Study.COMPLETED  <-- REMOVED, FIELD DELETED
         self.study.save()
+
+        # 6. Notify the patient via email
+        if not self.study.email_sent:
+            try:
+                from core.email_service import send_study_completed_email
+                send_study_completed_email(self.study)
+                self.study.email_sent = True
+                self.study.save()
+            except Exception as e:
+                print(f"Error sending study completion email: {e}")
 
         return super().form_valid(form)
 

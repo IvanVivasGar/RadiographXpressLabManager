@@ -18,6 +18,7 @@ class Patient(models.Model):
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default=OTHER)
+    is_email_verified = models.BooleanField(default=False)
     associated_doctors = models.ManyToManyField('associateDoctorDashboard.AssociateDoctor', related_name='patients')
 
     @property

@@ -4,6 +4,7 @@ from core.mixins import AssociatedDoctorRequiredMixin
 from patientsDashboard.models import Patient
 from associateDoctorDashboard.models import AssociateDoctor
 from .forms import AssociateDoctorSignupForm
+from core.email_service import send_verification_email
 
 class DashboardView(AssociatedDoctorRequiredMixin, ListView):
     template_name = 'associateDoctorDashboard/associateDashboard.html'
@@ -21,7 +22,12 @@ def signup(request):
         form = AssociateDoctorSignupForm(request.POST)
         if form.is_valid():
             doctor = form.save()
-            return redirect('login')
+            # Deactivate user until email is verified
+            doctor.user.is_active = False
+            doctor.user.save()
+            # Send verification email
+            send_verification_email(doctor.user, request)
+            return render(request, 'core/emails/verification_pending.html')
     else:
         form = AssociateDoctorSignupForm()
     

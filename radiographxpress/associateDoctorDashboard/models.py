@@ -10,6 +10,7 @@ class AssociateDoctor(models.Model):
     phone = models.CharField(max_length=100)
     professional_id = models.CharField(max_length=100, null=True, blank=True)
     university = models.CharField(max_length=100, null=True, blank=True)
+    is_email_verified = models.BooleanField(default=False)
     
     def first_name(self):
         return self.user.first_name

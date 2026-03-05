@@ -2,12 +2,47 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib import messages
 from .models import Study, Report
+from .email_service import _verify_token, send_welcome_email
 import os
 import base64
 from django.conf import settings
 # WeasyPrint is lazy-imported in generate_report_pdf to avoid loading at startup
 
+
+def verify_email(request, token):
+    """
+    Verifies a user's email using a signed token.
+    Activates the account, marks email as verified, sends welcome email.
+    """
+    user_pk = _verify_token(token)
+    if user_pk is None:
+        return render(request, 'core/emails/verification_failed.html')
+    
+    try:
+        user = User.objects.get(pk=user_pk)
+    except User.DoesNotExist:
+        return render(request, 'core/emails/verification_failed.html')
+    
+    # Activate the user
+    user.is_active = True
+    user.save()
+    
+    # Mark email as verified on the profile
+    if hasattr(user, 'patient_profile'):
+        user.patient_profile.is_email_verified = True
+        user.patient_profile.save()
+    elif hasattr(user, 'associate_doctor_profile'):
+        user.associate_doctor_profile.is_email_verified = True
+        user.associate_doctor_profile.save()
+    
+    # Send welcome email
+    send_welcome_email(user)
+    
+    messages.success(request, '¡Tu correo ha sido verificado exitosamente! Ya puedes iniciar sesión.')
+    return redirect('login')
 def login_success(request):
     """
     Redirects users to their specific dashboard based on their group membership.
@@ -71,13 +106,14 @@ def generate_report_pdf(request, report_id):
     css_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'core', 'css', 'report_pdf.css')
     with open(css_path, 'r') as f:
         css_content = f.read()
-    style_tag = f'<style>{css_content}</style>'
     
     # Load background image dynamically safely to avoid Weasyprint local fetch blocks
     bg_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'core', 'assets', 'img', 'background', 'report_background.png')
     with open(bg_path, "rb") as image_file:
         bg_base64 = base64.b64encode(image_file.read()).decode('utf-8')
     bg_data_uri = f"data:image/png;base64,{bg_base64}"
+    
+    style_tag = f'<style>{css_content}</style>'
     
     # Load logo image
     logo_path = os.path.join(settings.BASE_DIR, 'core', 'static', 'core', 'assets', 'img', 'logos', 'radiographxpress_logo.png')

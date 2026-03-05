@@ -65,14 +65,19 @@ def patient_logout(request):
 
 from django.contrib.auth import login
 from .forms import PatientSignupForm
+from core.email_service import send_verification_email
 
 def signup(request):
     if request.method == 'POST':
         form = PatientSignupForm(request.POST)
         if form.is_valid():
             patient = form.save()
-            # login(request, patient.user, backend='django.contrib.auth.backends.ModelBackend') # User requested no auto-login
-            return redirect('login')
+            # Deactivate user until email is verified
+            patient.user.is_active = False
+            patient.user.save()
+            # Send verification email
+            send_verification_email(patient.user, request)
+            return render(request, 'core/emails/verification_pending.html')
     else:
         form = PatientSignupForm()
     
