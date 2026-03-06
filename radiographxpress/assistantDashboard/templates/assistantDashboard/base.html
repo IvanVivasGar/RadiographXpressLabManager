@@ -26,23 +26,26 @@
                     class="navbar-logo">
             </div>
 
-            <div class="navbar-center">
-                <!-- Navigation links placeholder -->
+            <div class="navbar-center" style="display: flex; align-items: center; gap: 1.5rem;">
                 <span style="font-weight: 500; color: var(--text-white);">Portal de Asistentes</span>
                 <a href="{% url 'assistant_dashboard' %}" class="nav-link">Inicio</a>
+                <a href="{% url 'new_study_request' %}" class="nav-link">Nueva Solicitud</a>
             </div>
 
-            <div class="navbar-right">
-                <a href="{% url 'login' %}" class="nav-link">Cerrar Sesión</a>
-                <div class="user-info">
-                    {% if user.assistant_profile %}
-                    <span class="welcome-text">{{ user.last_name }}</span>
-                    {% else %}
-                    <span class="welcome-text">{{ user.username }}</span>
-                    {% endif %}
-                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Asistente' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
-                        alt="Profile" class="user-avatar">
-                </div>
+            <div class="navbar-right" style="display: flex; align-items: center; gap: 1rem;">
+                <a href="{% url 'assistant_logout' %}" class="nav-link">Cerrar Sesión</a>
+                <a href="{% url 'assistant_profile' %}"
+                    style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <div class="user-info" style="display: flex; align-items: center; gap: 8px;">
+                        {% if user.assistant_profile %}
+                        <span class="welcome-text">Bienvenido, {{ user.first_name }}</span>
+                        {% else %}
+                        <span class="welcome-text">{{ user.username }}</span>
+                        {% endif %}
+                        <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Asistente' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
+                            alt="Profile" class="user-avatar">
+                    </div>
+                </a>
             </div>
         </nav>
     </header>

@@ -1,0 +1,347 @@
+{% extends 'assistantDashboard/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - Asistente{% endblock %}
+
+{% block head %}
+<style>
+    /* Two-column layout */
+    .dashboard-layout {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 1.5rem;
+        height: calc(100vh - 130px);
+    }
+
+    /* Left panel: scrollable content */
+    .main-panel {
+        overflow-y: auto;
+        padding-right: 0.5rem;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .btn-new {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-new:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
+    }
+
+    /* Right sidebar: fixed height, internal scroll */
+    .tickets-sidebar {
+        background: var(--bg-white);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .sidebar-header {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f3f4f6;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+    }
+
+    .sidebar-header h2 {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .sidebar-header .badge {
+        background: var(--brand-gradient-end);
+        color: #fff;
+        font-size: 11px;
+        padding: 2px 10px;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .tickets-list {
+        flex: 1;
+        overflow-y: auto;
+        padding: 12px;
+    }
+
+    .ticket-card {
+        padding: 14px 16px;
+        border-radius: 10px;
+        border-left: 4px solid var(--brand-gradient-start);
+        background: var(--bg-page);
+        margin-bottom: 10px;
+        transition: box-shadow 0.15s;
+    }
+
+    .ticket-card:last-child {
+        margin-bottom: 0;
+    }
+
+    .ticket-card:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .ticket-card .patient-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: var(--text-primary);
+        margin-bottom: 2px;
+    }
+
+    .ticket-card .study-type {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-bottom: 4px;
+    }
+
+    .ticket-card .ticket-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 8px;
+    }
+
+    .ticket-card .ticket-time {
+        font-size: 11px;
+        color: var(--text-secondary);
+    }
+
+    .ticket-card .ticket-status {
+        font-size: 10px;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-weight: 500;
+    }
+
+    .status-new {
+        background: #dbeafe;
+        color: #1d4ed8;
+    }
+
+    .status-printed {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .btn-print-sm {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px 12px;
+        background: var(--bg-white);
+        color: var(--text-primary);
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 12px;
+        text-decoration: none;
+        transition: background 0.15s;
+        margin-top: 8px;
+    }
+
+    .btn-print-sm:hover {
+        background: #e5e7eb;
+    }
+
+    .empty-tickets {
+        padding: 2rem 1rem;
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 13px;
+    }
+
+    /* Study Requests Table */
+    .section-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .table-container {
+        background: var(--bg-white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .requests-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .requests-table th {
+        background: var(--bg-page);
+        padding: 10px 14px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .requests-table td {
+        padding: 10px 14px;
+        color: var(--text-primary);
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .requests-table tbody tr:hover {
+        background: #fafafa;
+    }
+
+    .requests-table .text-muted {
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+
+    .btn-print-table {
+        display: inline-flex;
+        align-items: center;
+        padding: 3px 10px;
+        background: var(--bg-page);
+        color: var(--text-primary);
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 12px;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+    .btn-print-table:hover {
+        background: #e5e7eb;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: var(--text-secondary);
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <!-- Left: Main Content -->
+    <div class="main-panel">
+        <div class="dashboard-header">
+            <h1 class="page-title">Panel de Asistente</h1>
+            <a href="{% url 'new_study_request' %}" class="btn-new">＋ Nueva Solicitud</a>
+        </div>
+
+        <div class="section-title">Todas las Solicitudes</div>
+
+        {% if study_requests %}
+        <div class="table-container">
+            <table class="requests-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Paciente</th>
+                        <th>Estudio</th>
+                        <th>Diagnóstico</th>
+                        <th>Doctor Asociado</th>
+                        <th>Fecha</th>
+                        <th>Ticket</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for req in study_requests %}
+                    <tr>
+                        <td>{{ req.pk }}</td>
+                        <td>{{ req.id_patient.first_name }} {{ req.id_patient.last_name }}</td>
+                        <td>{{ req.requested_study }}</td>
+                        <td>{{ req.diagnosis }}</td>
+                        <td>
+                            {% if req.id_associate_doctor %}
+                            {{ req.id_associate_doctor.user.first_name }} {{ req.id_associate_doctor.user.last_name }}
+                            {% else %}
+                            <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ req.created_at|date:"d/m/Y H:i"|default:"—" }}</td>
+                        <td>
+                            {% if req.is_ticket_printable %}
+                            <a href="{% url 'print_ticket' req.pk %}" target="_blank" class="btn-print-table">🖨️</a>
+                            {% else %}
+                            <span class="text-muted">Expirado</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No hay solicitudes de estudio registradas.</p>
+            <a href="{% url 'new_study_request' %}" class="btn-new" style="margin-top: 1rem;">＋ Crear Primera
+                Solicitud</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Right: Active Tickets Sidebar -->
+    <div class="tickets-sidebar">
+        <div class="sidebar-header">
+            <h2>Tickets Activos</h2>
+            {% if active_tickets %}
+            <span class="badge">{{ active_tickets|length }}</span>
+            {% endif %}
+        </div>
+        <div class="tickets-list">
+            {% for req in active_tickets %}
+            <div class="ticket-card">
+                <div class="patient-name">{{ req.id_patient.first_name }} {{ req.id_patient.last_name }}</div>
+                <div class="study-type">{{ req.requested_study }}</div>
+                <div class="ticket-meta">
+                    <span class="ticket-time">{{ req.created_at|date:"d/m/Y H:i" }}</span>
+                    {% if req.first_printed_at %}
+                    <span class="ticket-status status-printed">Impreso</span>
+                    {% else %}
+                    <span class="ticket-status status-new">Nuevo</span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'print_ticket' req.pk %}" target="_blank" class="btn-print-sm">
+                    🖨️ {% if req.first_printed_at %}Reimprimir{% else %}Imprimir{% endif %}
+                </a>
+            </div>
+            {% empty %}
+            <div class="empty-tickets">
+                No hay tickets activos.
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

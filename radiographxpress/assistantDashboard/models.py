@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils import timezone
 import secrets
 import string
 
@@ -12,10 +13,12 @@ class Assistant(models.Model):
     phone = models.CharField(max_length=100)
 
 class StudyRequest(models.Model):
-    id_solicitud_estudio = models.IntegerField(primary_key=True)
+    id_solicitud_estudio = models.AutoField(primary_key=True)
     diagnosis = models.CharField(max_length=100)
     requested_study = models.CharField(max_length=100)
     pdf_password = models.CharField(max_length=18, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=True)
+    first_printed_at = models.DateTimeField(null=True, blank=True)
     id_patient = models.ForeignKey('patientsDashboard.Patient', on_delete=models.CASCADE)
     id_associate_doctor = models.ForeignKey('associateDoctorDashboard.AssociateDoctor', on_delete=models.CASCADE, blank=True, null=True)
 
@@ -24,3 +27,13 @@ class StudyRequest(models.Model):
             alphabet = string.ascii_letters + string.digits
             self.pdf_password = ''.join(secrets.choice(alphabet) for _ in range(18))
         super().save(*args, **kwargs)
+
+    @property
+    def is_ticket_printable(self):
+        """
+        Ticket is always available until first printed.
+        Once printed, it stays active for 12 hours from first print time.
+        """
+        if not self.first_printed_at:
+            return True
+        return timezone.now() - self.first_printed_at < timezone.timedelta(hours=12)

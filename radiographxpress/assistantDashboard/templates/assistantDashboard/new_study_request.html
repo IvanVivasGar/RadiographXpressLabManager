@@ -1,0 +1,336 @@
+{% extends 'assistantDashboard/base.html' %}
+{% load static %}
+
+{% block title %}Nueva Solicitud - Asistente{% endblock %}
+
+{% block head %}
+<style>
+    .form-page {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .form-header {
+        margin-bottom: 2rem;
+    }
+
+    .form-header h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .form-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--text-primary);
+        margin-bottom: 6px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: var(--font-primary);
+        transition: border-color 0.15s;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        outline: none;
+        border-color: var(--brand-gradient-start);
+        box-shadow: 0 0 0 3px rgba(232, 93, 158, 0.1);
+    }
+
+    /* Patient Search Autocomplete */
+    .patient-search-wrapper {
+        position: relative;
+    }
+
+    .patient-search-input {
+        width: 100%;
+        padding: 10px 14px;
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        font-family: var(--font-primary);
+        box-sizing: border-box;
+    }
+
+    .patient-search-input:focus {
+        outline: none;
+        border-color: var(--brand-gradient-start);
+        box-shadow: 0 0 0 3px rgba(232, 93, 158, 0.1);
+    }
+
+    .search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: #fff;
+        border: 1px solid #d1d5db;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        max-height: 250px;
+        overflow-y: auto;
+        z-index: 100;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-results.open {
+        display: block;
+    }
+
+    .search-result-item {
+        padding: 10px 14px;
+        cursor: pointer;
+        border-bottom: 1px solid #f3f4f6;
+        transition: background 0.1s;
+    }
+
+    .search-result-item:hover {
+        background: #f9fafb;
+    }
+
+    .search-result-item:last-child {
+        border-bottom: none;
+    }
+
+    .result-name {
+        font-weight: 500;
+        font-size: 14px;
+        color: var(--text-primary);
+    }
+
+    .result-detail {
+        font-size: 12px;
+        color: var(--text-secondary);
+        margin-top: 2px;
+    }
+
+    .selected-patient {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 14px;
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        font-size: 14px;
+    }
+
+    .selected-patient .name {
+        font-weight: 500;
+        color: #166534;
+    }
+
+    .selected-patient .clear-btn {
+        background: none;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 0 4px;
+    }
+
+    .no-results {
+        padding: 12px 14px;
+        color: var(--text-secondary);
+        font-size: 13px;
+        font-style: italic;
+    }
+
+    /* Buttons */
+    .form-actions {
+        display: flex;
+        gap: 12px;
+        margin-top: 2rem;
+    }
+
+    .btn-submit {
+        padding: 10px 28px;
+        background: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
+    }
+
+    .btn-cancel {
+        padding: 10px 28px;
+        background: var(--bg-page);
+        color: var(--text-primary);
+        border: 1px solid #d1d5db;
+        border-radius: 8px;
+        font-size: 14px;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+    }
+
+    .btn-cancel:hover {
+        background: #e5e7eb;
+    }
+
+    /* Errors */
+    .form-errors {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 1.5rem;
+        color: #dc2626;
+        font-size: 14px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-header">
+        <h1>Nueva Solicitud de Estudio</h1>
+    </div>
+
+    <div class="form-card">
+        {% if form.non_field_errors %}
+        <div class="form-errors">
+            {% for error in form.non_field_errors %}
+            <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" id="studyRequestForm">
+            {% csrf_token %}
+
+            <!-- Patient Search -->
+            <div class="form-group">
+                <label>Paciente *</label>
+                <div class="patient-search-wrapper" id="patientSearchWrapper">
+                    <input type="text" class="patient-search-input" id="patientSearchInput"
+                        placeholder="Buscar por nombre, correo o teléfono..." autocomplete="off">
+                    <input type="hidden" name="id_patient" id="patientIdHidden">
+                    <div class="search-results" id="searchResults"></div>
+                </div>
+                <div class="selected-patient" id="selectedPatient" style="display: none;">
+                    <span class="name" id="selectedPatientName"></span>
+                    <button type="button" class="clear-btn" id="clearPatient">✕</button>
+                </div>
+            </div>
+
+            <!-- Form Fields -->
+            {% for field in form %}
+            <div class="form-group">
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                <div class="form-errors" style="margin-top: 4px;">
+                    {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">Crear Solicitud</button>
+                <a href="{% url 'assistant_dashboard' %}" class="btn-cancel">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('patientSearchInput');
+        const searchResults = document.getElementById('searchResults');
+        const hiddenInput = document.getElementById('patientIdHidden');
+        const selectedDiv = document.getElementById('selectedPatient');
+        const selectedName = document.getElementById('selectedPatientName');
+        const clearBtn = document.getElementById('clearPatient');
+        const searchWrapper = document.getElementById('patientSearchWrapper');
+        let debounceTimer;
+
+        searchInput.addEventListener('input', function () {
+            clearTimeout(debounceTimer);
+            const query = this.value.trim();
+
+            if (query.length < 2) {
+                searchResults.classList.remove('open');
+                return;
+            }
+
+            debounceTimer = setTimeout(() => {
+                fetch(`{% url 'patient_search_api' %}?q=${encodeURIComponent(query)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        searchResults.innerHTML = '';
+                        if (data.length === 0) {
+                            searchResults.innerHTML = '<div class="no-results">No se encontraron pacientes.</div>';
+                        } else {
+                            data.forEach(p => {
+                                const item = document.createElement('div');
+                                item.className = 'search-result-item';
+                                item.innerHTML = `
+                                <div class="result-name">${p.first_name} ${p.last_name}</div>
+                                <div class="result-detail">${p.email || ''}${p.phone ? ' · ' + p.phone : ''}</div>
+                            `;
+                                item.addEventListener('click', () => selectPatient(p));
+                                searchResults.appendChild(item);
+                            });
+                        }
+                        searchResults.classList.add('open');
+                    });
+            }, 300);
+        });
+
+        function selectPatient(patient) {
+            hiddenInput.value = patient.id;
+            selectedName.textContent = `${patient.first_name} ${patient.last_name} — ${patient.email || ''}`;
+            searchWrapper.style.display = 'none';
+            selectedDiv.style.display = 'flex';
+            searchResults.classList.remove('open');
+        }
+
+        clearBtn.addEventListener('click', function () {
+            hiddenInput.value = '';
+            searchInput.value = '';
+            searchWrapper.style.display = 'block';
+            selectedDiv.style.display = 'none';
+            searchInput.focus();
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function (e) {
+            if (!searchWrapper.contains(e.target)) {
+                searchResults.classList.remove('open');
+            }
+        });
+    });
+</script>
+{% endblock %}

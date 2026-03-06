@@ -54,8 +54,7 @@ def login_success(request):
     elif request.user.groups.filter(name='AssociatedDoctors').exists():
         return redirect('associate_dashboard')
     elif request.user.groups.filter(name='Assistants').exists():
-        # TODO: Update with real URL name when Assistant app is ready
-        return redirect('admin:index')
+        return redirect('assistant_dashboard')
     
     # Fallback for superusers or unassigned users
     return redirect('home')

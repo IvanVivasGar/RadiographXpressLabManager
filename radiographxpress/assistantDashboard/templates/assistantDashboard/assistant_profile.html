@@ -1,0 +1,100 @@
+{% extends 'assistantDashboard/base.html' %}
+
+{% block title %}Mi Perfil - Asistente{% endblock %}
+
+{% block head %}
+<style>
+    .profile-page {
+        max-width: 560px;
+        margin: 0 auto;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .profile-header h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--text-primary);
+    }
+
+    .profile-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-avatar {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .profile-avatar img {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+    }
+
+    .profile-field {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid #f3f4f6;
+        font-size: 14px;
+    }
+
+    .profile-field:last-child {
+        border-bottom: none;
+    }
+
+    .profile-field .label {
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .profile-field .value {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <div class="profile-header">
+        <h1>Mi Perfil</h1>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-avatar">
+            <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'A' }}&background=0D8ABC&color=fff&rounded=true&bold=true&size=80"
+                alt="Avatar">
+        </div>
+
+        <div class="profile-field">
+            <span class="label">Nombre</span>
+            <span class="value">{{ user.first_name }} {{ user.last_name }}</span>
+        </div>
+        <div class="profile-field">
+            <span class="label">Correo</span>
+            <span class="value">{{ user.email }}</span>
+        </div>
+        {% if assistant.phone %}
+        <div class="profile-field">
+            <span class="label">Teléfono</span>
+            <span class="value">{{ assistant.phone }}</span>
+        </div>
+        {% endif %}
+        {% if assistant.address %}
+        <div class="profile-field">
+            <span class="label">Dirección</span>
+            <span class="value">{{ assistant.address }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
