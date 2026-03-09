@@ -58,6 +58,20 @@ class PatientProfileUpdateView(PatientRequiredMixin, UpdateView):
         context['page_title'] = 'Editar Perfil'
         return context
 
+class ManageDoctorsView(PatientRequiredMixin, DetailView):
+    """Page for patients to manage which doctors can see their studies."""
+    model = Patient
+    template_name = 'patientsDashboard/manage_doctors.html'
+    context_object_name = 'patient'
+
+    def get_object(self):
+        return self.request.user.patient_profile
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['granted_doctors'] = self.request.user.patient_profile.associated_doctors.select_related('user').all()
+        return context
+
 @login_required
 def patient_logout(request):
     logout(request)

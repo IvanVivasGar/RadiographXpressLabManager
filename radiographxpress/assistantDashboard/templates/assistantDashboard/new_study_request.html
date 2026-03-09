@@ -56,7 +56,7 @@
         box-shadow: 0 0 0 3px rgba(232, 93, 158, 0.1);
     }
 
-    /* Patient Search Autocomplete */
+    /* Patient Search */
     .patient-search-wrapper {
         position: relative;
     }
@@ -86,7 +86,7 @@
         border: 1px solid #d1d5db;
         border-top: none;
         border-radius: 0 0 8px 8px;
-        max-height: 250px;
+        max-height: 280px;
         overflow-y: auto;
         z-index: 100;
         display: none;
@@ -156,6 +156,151 @@
         font-style: italic;
     }
 
+    /* Create Patient Option */
+    .create-patient-option {
+        padding: 10px 14px;
+        cursor: pointer;
+        border-top: 1px solid #e5e7eb;
+        background: #fffbeb;
+        transition: background 0.1s;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .create-patient-option:hover {
+        background: #fef3c7;
+    }
+
+    .create-patient-option .create-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        font-weight: 600;
+        flex-shrink: 0;
+    }
+
+    .create-patient-option .create-text {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .create-patient-option .create-hint {
+        font-size: 11px;
+        color: var(--text-secondary);
+    }
+
+    /* Inline Create Patient Form */
+    .create-patient-form {
+        background: #fefce8;
+        border: 1px solid #fde68a;
+        border-radius: 10px;
+        padding: 1.2rem;
+        margin-top: 10px;
+    }
+
+    .create-patient-form h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0 0 12px 0;
+    }
+
+    .create-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .create-form-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .create-form-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .create-form-field label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+    }
+
+    .create-form-field input,
+    .create-form-field select {
+        padding: 8px 10px;
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 13px;
+        font-family: var(--font-primary);
+        box-sizing: border-box;
+    }
+
+    .create-form-field input:focus,
+    .create-form-field select:focus {
+        outline: none;
+        border-color: var(--brand-gradient-start);
+    }
+
+    .create-form-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: 12px;
+    }
+
+    .btn-create-patient {
+        padding: 7px 18px;
+        background: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: transform 0.15s;
+    }
+
+    .btn-create-patient:hover {
+        transform: translateY(-1px);
+    }
+
+    .btn-create-patient:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-cancel-create {
+        padding: 7px 18px;
+        background: var(--bg-white);
+        color: var(--text-primary);
+        border: 1px solid #d1d5db;
+        border-radius: 6px;
+        font-size: 13px;
+        cursor: pointer;
+    }
+
+    .create-form-error {
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        border-radius: 6px;
+        padding: 8px 12px;
+        color: #dc2626;
+        font-size: 12px;
+        margin-bottom: 10px;
+        display: none;
+    }
+
     /* Buttons */
     .form-actions {
         display: flex;
@@ -196,7 +341,6 @@
         background: #e5e7eb;
     }
 
-    /* Errors */
     .form-errors {
         background: #fef2f2;
         border: 1px solid #fecaca;
@@ -240,6 +384,50 @@
                     <span class="name" id="selectedPatientName"></span>
                     <button type="button" class="clear-btn" id="clearPatient">✕</button>
                 </div>
+
+                <!-- Inline Create Patient Form (hidden by default) -->
+                <div class="create-patient-form" id="createPatientForm" style="display: none;">
+                    <h3>Registrar Nuevo Paciente</h3>
+                    <div class="create-form-error" id="createFormError"></div>
+                    <div class="create-form-row">
+                        <div class="create-form-field">
+                            <label>Nombre *</label>
+                            <input type="text" id="newPatientFirstName" placeholder="Nombre">
+                        </div>
+                        <div class="create-form-field">
+                            <label>Apellido *</label>
+                            <input type="text" id="newPatientLastName" placeholder="Apellido">
+                        </div>
+                    </div>
+                    <div class="create-form-row">
+                        <div class="create-form-field">
+                            <label>Correo *</label>
+                            <input type="email" id="newPatientEmail" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="create-form-field">
+                            <label>Teléfono *</label>
+                            <input type="text" id="newPatientPhone" placeholder="555-0000">
+                        </div>
+                    </div>
+                    <div class="create-form-row">
+                        <div class="create-form-field">
+                            <label>Género</label>
+                            <select id="newPatientGender">
+                                <option value="M">Masculino</option>
+                                <option value="F">Femenino</option>
+                                <option value="O" selected>Otro</option>
+                            </select>
+                        </div>
+                        <div class="create-form-field">
+                            <label>Dirección</label>
+                            <input type="text" id="newPatientAddress" placeholder="Dirección">
+                        </div>
+                    </div>
+                    <div class="create-form-actions">
+                        <button type="button" class="btn-create-patient" id="btnCreatePatient">Crear Paciente</button>
+                        <button type="button" class="btn-cancel-create" id="btnCancelCreate">Cancelar</button>
+                    </div>
+                </div>
             </div>
 
             <!-- Form Fields -->
@@ -266,71 +454,149 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const searchInput = document.getElementById('patientSearchInput');
-        const searchResults = document.getElementById('searchResults');
-        const hiddenInput = document.getElementById('patientIdHidden');
-        const selectedDiv = document.getElementById('selectedPatient');
-        const selectedName = document.getElementById('selectedPatientName');
-        const clearBtn = document.getElementById('clearPatient');
-        const searchWrapper = document.getElementById('patientSearchWrapper');
-        let debounceTimer;
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('patientSearchInput');
+    const searchResults = document.getElementById('searchResults');
+    const hiddenInput = document.getElementById('patientIdHidden');
+    const selectedDiv = document.getElementById('selectedPatient');
+    const selectedName = document.getElementById('selectedPatientName');
+    const clearBtn = document.getElementById('clearPatient');
+    const searchWrapper = document.getElementById('patientSearchWrapper');
+    const createForm = document.getElementById('createPatientForm');
+    const createError = document.getElementById('createFormError');
+    let debounceTimer;
+    let lastQuery = '';
 
-        searchInput.addEventListener('input', function () {
-            clearTimeout(debounceTimer);
-            const query = this.value.trim();
+    searchInput.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        const query = this.value.trim();
+        lastQuery = query;
 
-            if (query.length < 2) {
-                searchResults.classList.remove('open');
-                return;
-            }
+        if (query.length < 2) {
+            searchResults.classList.remove('open');
+            return;
+        }
 
-            debounceTimer = setTimeout(() => {
-                fetch(`{% url 'patient_search_api' %}?q=${encodeURIComponent(query)}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        searchResults.innerHTML = '';
-                        if (data.length === 0) {
-                            searchResults.innerHTML = '<div class="no-results">No se encontraron pacientes.</div>';
-                        } else {
-                            data.forEach(p => {
-                                const item = document.createElement('div');
-                                item.className = 'search-result-item';
-                                item.innerHTML = `
+        debounceTimer = setTimeout(() => {
+            fetch(`{% url 'patient_search_api' %}?q=${encodeURIComponent(query)}`)
+                .then(res => res.json())
+                .then(data => {
+                    searchResults.innerHTML = '';
+
+                    if (data.length === 0) {
+                        searchResults.innerHTML = '<div class="no-results">No se encontraron pacientes.</div>';
+                    } else {
+                        data.forEach(p => {
+                            const item = document.createElement('div');
+                            item.className = 'search-result-item';
+                            item.innerHTML = `
                                 <div class="result-name">${p.first_name} ${p.last_name}</div>
                                 <div class="result-detail">${p.email || ''}${p.phone ? ' · ' + p.phone : ''}</div>
                             `;
-                                item.addEventListener('click', () => selectPatient(p));
-                                searchResults.appendChild(item);
-                            });
-                        }
-                        searchResults.classList.add('open');
-                    });
-            }, 300);
-        });
+                            item.addEventListener('click', () => selectPatient(p));
+                            searchResults.appendChild(item);
+                        });
+                    }
 
-        function selectPatient(patient) {
-            hiddenInput.value = patient.id;
-            selectedName.textContent = `${patient.first_name} ${patient.last_name} — ${patient.email || ''}`;
-            searchWrapper.style.display = 'none';
-            selectedDiv.style.display = 'flex';
-            searchResults.classList.remove('open');
-        }
+                    // Always show "Create new patient" option at the bottom
+                    const createOption = document.createElement('div');
+                    createOption.className = 'create-patient-option';
+                    createOption.innerHTML = `
+                        <span class="create-icon">+</span>
+                        <div>
+                            <div class="create-text">Registrar nuevo paciente</div>
+                            <div class="create-hint">El paciente no existe en el sistema</div>
+                        </div>
+                    `;
+                    createOption.addEventListener('click', () => showCreateForm());
+                    searchResults.appendChild(createOption);
 
-        clearBtn.addEventListener('click', function () {
-            hiddenInput.value = '';
-            searchInput.value = '';
-            searchWrapper.style.display = 'block';
-            selectedDiv.style.display = 'none';
-            searchInput.focus();
-        });
+                    searchResults.classList.add('open');
+                });
+        }, 300);
+    });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function (e) {
-            if (!searchWrapper.contains(e.target)) {
-                searchResults.classList.remove('open');
+    function selectPatient(patient) {
+        hiddenInput.value = patient.id;
+        selectedName.textContent = `${patient.first_name} ${patient.last_name} — ${patient.email || ''}`;
+        searchWrapper.style.display = 'none';
+        createForm.style.display = 'none';
+        selectedDiv.style.display = 'flex';
+        searchResults.classList.remove('open');
+    }
+
+    function showCreateForm() {
+        searchResults.classList.remove('open');
+        searchWrapper.style.display = 'none';
+        createForm.style.display = 'block';
+        createError.style.display = 'none';
+        // Pre-fill name if the search query looks like a name
+        const parts = lastQuery.split(' ');
+        if (parts.length >= 1) document.getElementById('newPatientFirstName').value = parts[0] || '';
+        if (parts.length >= 2) document.getElementById('newPatientLastName').value = parts.slice(1).join(' ') || '';
+        document.getElementById('newPatientFirstName').focus();
+    }
+
+    clearBtn.addEventListener('click', function() {
+        hiddenInput.value = '';
+        searchInput.value = '';
+        searchWrapper.style.display = 'block';
+        selectedDiv.style.display = 'none';
+        createForm.style.display = 'none';
+        searchInput.focus();
+    });
+
+    document.getElementById('btnCancelCreate').addEventListener('click', function() {
+        createForm.style.display = 'none';
+        searchWrapper.style.display = 'block';
+        searchInput.focus();
+    });
+
+    document.getElementById('btnCreatePatient').addEventListener('click', function() {
+        const btn = this;
+        btn.disabled = true;
+        btn.textContent = 'Creando...';
+        createError.style.display = 'none';
+
+        const formData = new FormData();
+        formData.append('first_name', document.getElementById('newPatientFirstName').value);
+        formData.append('last_name', document.getElementById('newPatientLastName').value);
+        formData.append('email', document.getElementById('newPatientEmail').value);
+        formData.append('phone', document.getElementById('newPatientPhone').value);
+        formData.append('gender', document.getElementById('newPatientGender').value);
+        formData.append('address', document.getElementById('newPatientAddress').value);
+
+        fetch('{% url "create_patient_api" %}', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.textContent = 'Crear Paciente';
+
+            if (data.success) {
+                selectPatient(data.patient);
+            } else {
+                createError.innerHTML = data.errors.map(e => `<p>${e}</p>`).join('');
+                createError.style.display = 'block';
             }
+        })
+        .catch(() => {
+            btn.disabled = false;
+            btn.textContent = 'Crear Paciente';
+            createError.innerHTML = '<p>Error de conexión.</p>';
+            createError.style.display = 'block';
         });
     });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function(e) {
+        if (!searchWrapper.contains(e.target) && !createForm.contains(e.target)) {
+            searchResults.classList.remove('open');
+        }
+    });
+});
 </script>
 {% endblock %}

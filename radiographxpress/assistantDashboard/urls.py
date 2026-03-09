@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout/', views.assistant_logout, name='assistant_logout'),
     path('ticket/<int:study_request_id>/', views.print_ticket, name='print_ticket'),
     path('api/patient-search/', api.patient_search, name='patient_search_api'),
+    path('api/create-patient/', api.create_patient, name='create_patient_api'),
 ]
