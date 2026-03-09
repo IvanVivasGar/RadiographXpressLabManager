@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView
+from django.views.generic import ListView, DetailView
 from core.mixins import AssociatedDoctorRequiredMixin
 from patientsDashboard.models import Patient
 from associateDoctorDashboard.models import AssociateDoctor
 from .forms import AssociateDoctorSignupForm
 from core.email_service import send_verification_email
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.decorators import login_required
 
 class DashboardView(AssociatedDoctorRequiredMixin, ListView):
     template_name = 'associateDoctorDashboard/associateDashboard.html'
@@ -16,6 +18,14 @@ class DashboardView(AssociatedDoctorRequiredMixin, ListView):
             doctor = self.request.user.associate_doctor_profile
             return doctor.patients.all().prefetch_related('study_set')
         return Patient.objects.none()
+
+class ProfileView(AssociatedDoctorRequiredMixin, DetailView):
+    model = AssociateDoctor
+    template_name = 'associateDoctorDashboard/profile.html'
+    context_object_name = 'doctor'
+
+    def get_object(self):
+        return self.request.user.associate_doctor_profile
 
 def signup(request):
     if request.method == 'POST':
@@ -32,3 +42,8 @@ def signup(request):
         form = AssociateDoctorSignupForm()
     
     return render(request, 'associateDoctorDashboard/registration/signup.html', {'form': form})
+
+@login_required
+def associate_logout(request):
+    auth_logout(request)
+    return redirect('login')

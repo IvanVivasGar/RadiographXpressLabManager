@@ -26,22 +26,25 @@
                     class="navbar-logo">
             </div>
 
-            <div class="navbar-center">
-                <!-- Navigation links placeholder -->
+            <div class="navbar-center" style="display: flex; align-items: center; gap: 1.5rem;">
                 <span style="font-weight: 500; color: var(--text-white);">Portal de Médicos Asociados</span>
+                <a href="{% url 'associate_dashboard' %}" class="nav-link">Inicio</a>
             </div>
 
-            <div class="navbar-right">
-                <a href="{% url 'login' %}" class="nav-link">Cerrar Sesión</a>
-                <div class="user-info">
-                    {% if user.associate_doctor_profile %}
-                    <span class="welcome-text">Dr. {{ user.last_name }}</span>
-                    {% else %}
-                    <span class="welcome-text">{{ user.username }}</span>
-                    {% endif %}
-                    <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Doc' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
-                        alt="Profile" class="user-avatar">
-                </div>
+            <div class="navbar-right" style="display: flex; align-items: center; gap: 1rem;">
+                <a href="{% url 'associate_logout' %}" class="nav-link">Cerrar Sesión</a>
+                <a href="{% url 'associate_profile' %}"
+                    style="text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                    <div class="user-info" style="display: flex; align-items: center; gap: 8px;">
+                        {% if user.associate_doctor_profile %}
+                        <span class="welcome-text">{{ user.associate_doctor_profile }}</span>
+                        {% else %}
+                        <span class="welcome-text">{{ user.username }}</span>
+                        {% endif %}
+                        <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'Doc' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
+                            alt="Profile" class="user-avatar">
+                    </div>
+                </a>
             </div>
         </nav>
     </header>

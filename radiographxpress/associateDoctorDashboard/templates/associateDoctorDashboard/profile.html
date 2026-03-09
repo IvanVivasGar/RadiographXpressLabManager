@@ -1,0 +1,154 @@
+{% extends 'associateDoctorDashboard/base.html' %}
+{% load static %}
+
+{% block title %}Mi Perfil - Médico Asociado{% endblock %}
+
+{% block head %}
+<style>
+    .profile-page {
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .profile-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    }
+
+    .profile-header-info h1 {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .profile-header-info p {
+        font-size: 14px;
+        color: var(--text-secondary);
+        margin: 4px 0 0 0;
+    }
+
+    .profile-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .profile-field {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .profile-field.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .profile-field label {
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .profile-field span {
+        font-size: 15px;
+        font-weight: 500;
+        color: var(--text-primary);
+    }
+
+    .profile-divider {
+        border: none;
+        border-top: 1px solid #f3f4f6;
+        margin: 1.5rem 0;
+        grid-column: 1 / -1;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 14px;
+        margin-bottom: 1.5rem;
+        transition: color 0.15s;
+    }
+
+    .back-link:hover {
+        color: var(--text-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+    <a href="{% url 'associate_dashboard' %}" class="back-link">← Volver al Panel</a>
+
+    <div class="profile-header">
+        <img src="https://ui-avatars.com/api/?name={{ doctor.user.first_name }}+{{ doctor.user.last_name }}&background=0D8ABC&color=fff&rounded=true&bold=true&size=160"
+            alt="Avatar" class="profile-avatar">
+        <div class="profile-header-info">
+            <h1>{{ doctor }}</h1>
+            <p>{{ doctor.user.email }}</p>
+        </div>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-grid">
+            <div class="profile-field">
+                <label>Nombre</label>
+                <span>{{ doctor.user.first_name }}</span>
+            </div>
+            <div class="profile-field">
+                <label>Apellido</label>
+                <span>{{ doctor.user.last_name }}</span>
+            </div>
+            <div class="profile-field">
+                <label>Correo Electrónico</label>
+                <span>{{ doctor.user.email }}</span>
+            </div>
+            <div class="profile-field">
+                <label>Teléfono</label>
+                <span>{{ doctor.phone }}</span>
+            </div>
+
+            <hr class="profile-divider">
+
+            <div class="profile-field">
+                <label>Cédula Profesional</label>
+                <span>{{ doctor.professional_id|default:"No registrada" }}</span>
+            </div>
+            <div class="profile-field">
+                <label>Universidad</label>
+                <span>{{ doctor.university|default:"No registrada" }}</span>
+            </div>
+            <div class="profile-field">
+                <label>Dirección</label>
+                <span>{{ doctor.address }}</span>
+            </div>
+            <div class="profile-field">
+                <label>Género</label>
+                <span>{{ doctor.get_gender_display }}</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
