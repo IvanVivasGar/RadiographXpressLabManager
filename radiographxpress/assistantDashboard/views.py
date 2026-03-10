@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, TemplateView
 from django.urls import reverse_lazy
 from core.mixins import AssistantRequiredMixin
 from .models import Assistant, StudyRequest
@@ -12,11 +12,34 @@ from django.utils import timezone
 from datetime import timedelta
 
 
-class AssistantDashboardView(AssistantRequiredMixin, ListView):
-    """Main dashboard: active tickets + all study requests."""
-    model = StudyRequest
+class AssistantDashboardView(AssistantRequiredMixin, TemplateView):
+    """Main dashboard: active tickets + pending doctors."""
     template_name = 'assistantDashboard/assistant_dashboard.html'
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        cutoff = timezone.now() - timedelta(hours=12)
+        # Active tickets: never printed OR printed within 12hrs
+        from django.db.models import Q
+        context['active_tickets'] = StudyRequest.objects.filter(
+            Q(first_printed_at__isnull=True) | Q(first_printed_at__gte=cutoff)
+        ).select_related('id_patient__user').order_by('-created_at')
+
+        # Add pending associate doctors to context
+        from associateDoctorDashboard.models import AssociateDoctor
+        context['pending_doctors'] = AssociateDoctor.objects.filter(
+            is_email_verified=True, is_verified=False
+        ).select_related('user').order_by('-user__date_joined')
+
+        return context
+
+
+class AllStudyRequestsView(AssistantRequiredMixin, ListView):
+    """View to list all study requests in the system."""
+    model = StudyRequest
+    template_name = 'assistantDashboard/all_requests.html'
     context_object_name = 'study_requests'
+    paginate_by = 20
 
     def get_queryset(self):
         return StudyRequest.objects.all().select_related(
@@ -31,6 +54,13 @@ class AssistantDashboardView(AssistantRequiredMixin, ListView):
         context['active_tickets'] = StudyRequest.objects.filter(
             Q(first_printed_at__isnull=True) | Q(first_printed_at__gte=cutoff)
         ).select_related('id_patient__user').order_by('-created_at')
+
+        # Add pending associate doctors to context
+        from associateDoctorDashboard.models import AssociateDoctor
+        context['pending_doctors'] = AssociateDoctor.objects.filter(
+            is_email_verified=True, is_verified=False
+        ).select_related('user').order_by('-user__date_joined')
+
         return context
 
 

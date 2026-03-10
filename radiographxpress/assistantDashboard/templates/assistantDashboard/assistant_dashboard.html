@@ -187,65 +187,111 @@
         margin-bottom: 1rem;
     }
 
-    .table-container {
-        background: var(--bg-white);
-        border-radius: 12px;
-        overflow: hidden;
-        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-    }
 
-    .requests-table {
-        width: 100%;
-        border-collapse: collapse;
-        font-size: 13px;
-    }
-
-    .requests-table th {
-        background: var(--bg-page);
-        padding: 10px 14px;
-        text-align: left;
-        font-weight: 600;
-        color: var(--text-primary);
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    .requests-table td {
-        padding: 10px 14px;
-        color: var(--text-primary);
-        border-bottom: 1px solid #f3f4f6;
-    }
-
-    .requests-table tbody tr:hover {
-        background: #fafafa;
-    }
-
-    .requests-table .text-muted {
-        color: var(--text-secondary);
-        font-style: italic;
-    }
-
-    .btn-print-table {
-        display: inline-flex;
-        align-items: center;
-        padding: 3px 10px;
-        background: var(--bg-page);
-        color: var(--text-primary);
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 12px;
-        text-decoration: none;
-        transition: background 0.15s;
-    }
-
-    .btn-print-table:hover {
-        background: #e5e7eb;
-    }
 
     .empty-state {
         text-align: center;
         padding: 3rem;
         color: var(--text-secondary);
         font-size: 14px;
+    }
+
+    .pending-doctors-section {
+        margin-bottom: 2rem;
+    }
+
+    .doctor-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    .doctor-verify-card {
+        background: var(--bg-white);
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e2e8f0;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .doctor-verify-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .doctor-verify-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .doctor-verify-info h3 {
+        margin: 0;
+        font-size: 15px;
+        color: var(--text-primary);
+    }
+
+    .doctor-verify-info p {
+        margin: 2px 0 0 0;
+        font-size: 12px;
+        color: var(--text-secondary);
+    }
+
+    .doctor-verify-details {
+        font-size: 13px;
+        color: var(--text-primary);
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 4px;
+        background: #f8fafc;
+        padding: 8px 12px;
+        border-radius: 6px;
+    }
+
+    .doctor-verify-actions {
+        display: flex;
+        gap: 8px;
+        margin-top: auto;
+    }
+
+    .btn-verify {
+        flex: 1;
+        padding: 8px;
+        border: none;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: background 0.15s, opacity 0.15s;
+    }
+
+    .btn-verify.approve {
+        background: #10b981;
+        color: white;
+    }
+
+    .btn-verify.approve:hover {
+        background: #059669;
+    }
+
+    .btn-verify.deny {
+        background: #f43f5e;
+        color: white;
+    }
+
+    .btn-verify.deny:hover {
+        background: #e11d48;
+    }
+
+    .btn-verify:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
     }
 </style>
 {% endblock %}
@@ -259,56 +305,42 @@
             <a href="{% url 'new_study_request' %}" class="btn-new">＋ Nueva Solicitud</a>
         </div>
 
-        <div class="section-title">Todas las Solicitudes</div>
+        <div class="pending-doctors-section" id="pendingDoctorsSection">
+            <div class="section-title"
+                style="font-size: 1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 1rem;">Doctores
+                Pendientes de Aprobación</div>
 
-        {% if study_requests %}
-        <div class="table-container">
-            <table class="requests-table">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Paciente</th>
-                        <th>Estudio</th>
-                        <th>Diagnóstico</th>
-                        <th>Doctor Asociado</th>
-                        <th>Fecha</th>
-                        <th>Ticket</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for req in study_requests %}
-                    <tr>
-                        <td>{{ req.pk }}</td>
-                        <td>{{ req.id_patient.first_name }} {{ req.id_patient.last_name }}</td>
-                        <td>{{ req.requested_study }}</td>
-                        <td>{{ req.diagnosis }}</td>
-                        <td>
-                            {% if req.id_associate_doctor %}
-                            {{ req.id_associate_doctor.user.first_name }} {{ req.id_associate_doctor.user.last_name }}
-                            {% else %}
-                            <span class="text-muted">—</span>
-                            {% endif %}
-                        </td>
-                        <td>{{ req.created_at|date:"d/m/Y H:i"|default:"—" }}</td>
-                        <td>
-                            {% if req.is_ticket_printable %}
-                            <a href="{% url 'print_ticket' req.pk %}" target="_blank" class="btn-print-table">🖨️</a>
-                            {% else %}
-                            <span class="text-muted">Expirado</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="doctor-cards-grid" id="pendingDoctorsGrid">
+                {% if pending_doctors %}
+                {% for doc in pending_doctors %}
+                <div class="doctor-verify-card" data-doctor-id="{{ doc.pk }}">
+                    <div class="doctor-verify-header">
+                        <img src="https://ui-avatars.com/api/?name={{ doc.user.first_name }}&background=0D8ABC&color=fff&rounded=true&bold=true"
+                            alt="Avatar" class="doctor-verify-avatar">
+                        <div class="doctor-verify-info">
+                            <h3>{{ doc.user.first_name }} {{ doc.user.last_name }}</h3>
+                            <p>Doctor Asociado</p>
+                        </div>
+                    </div>
+                    <div class="doctor-verify-details">
+                        <div><strong>Cédula:</strong> {{ doc.professional_id|default:"-" }}</div>
+                        <div><strong>Uni:</strong> {{ doc.university|default:"-" }}</div>
+                        <div><strong>Email:</strong> {{ doc.user.email }}</div>
+                        <div><strong>Tel:</strong> {{ doc.phone|default:"-" }}</div>
+                    </div>
+                    <div class="doctor-verify-actions">
+                        <button class="btn-verify approve" data-action="approve">Aprobar</button>
+                        <button class="btn-verify deny" data-action="deny">Rechazar</button>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="empty-state" style="grid-column: 1 / -1;">
+                    <p style="margin: 0;">No hay cuentas de doctores asociadas pendientes de revisión.</p>
+                </div>
+                {% endif %}
+            </div>
         </div>
-        {% else %}
-        <div class="empty-state">
-            <p>No hay solicitudes de estudio registradas.</p>
-            <a href="{% url 'new_study_request' %}" class="btn-new" style="margin-top: 1rem;">＋ Crear Primera
-                Solicitud</a>
-        </div>
-        {% endif %}
     </div>
 
     <!-- Right: Active Tickets Sidebar -->
@@ -344,4 +376,78 @@
         </div>
     </div>
 </div>
+
+<!-- Hidden CSRF token for verify API calls -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const pendingGrid = document.getElementById('pendingDoctorsGrid');
+        if (pendingGrid) {
+            pendingGrid.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.btn-verify');
+                if (!btn) return;
+
+                const action = btn.dataset.action;
+                const cardEl = btn.closest('.doctor-verify-card');
+                const doctorId = cardEl.dataset.doctorId;
+
+                if (action && doctorId) {
+                    await verifyDoctor(doctorId, action, btn, cardEl);
+                }
+            });
+        }
+    });
+
+    async function verifyDoctor(doctorId, action, buttonEl, cardEl) {
+        const buttons = cardEl.querySelectorAll('.btn-verify');
+
+        // Disable buttons holding state
+        buttons.forEach(btn => btn.disabled = true);
+        const originalText = buttonEl.innerText;
+        buttonEl.innerText = action === 'approve' ? 'Aprobando...' : 'Rechazando...';
+
+        const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+        const formData = new FormData();
+        formData.append('doctor_id', doctorId);
+        formData.append('action', action);
+
+        try {
+            const response = await fetch("{% url 'verify_doctor_api' %}", {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken
+                },
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove card on success
+                cardEl.style.transition = 'opacity 0.3s, transform 0.3s';
+                cardEl.style.opacity = '0';
+                cardEl.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    cardEl.remove();
+                    // If no cards left, remove the whole section
+                    const grid = document.getElementById('pendingDoctorsGrid');
+                    if (grid && grid.children.length === 0) {
+                        const section = document.getElementById('pendingDoctorsSection');
+                        if (section) section.remove();
+                    }
+                }, 300);
+            } else {
+                alert('Error: ' + (data.error || 'No se pudo procesar la solicitud.'));
+                buttons.forEach(btn => btn.disabled = false);
+                buttonEl.innerText = originalText;
+            }
+        } catch (error) {
+            console.error('Error verifying doctor:', error);
+            alert('Error de conexión al procesar la solicitud.');
+            buttons.forEach(btn => btn.disabled = false);
+            buttonEl.innerText = originalText;
+        }
+    }
+</script>
 {% endblock %}

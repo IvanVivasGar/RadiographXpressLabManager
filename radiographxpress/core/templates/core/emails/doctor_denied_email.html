@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 40px 0;
+        }
+
+        .container {
+            max-width: 560px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #f43f5e, #e11d48);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 22px;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .body {
+            padding: 35px 30px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .body p {
+            margin: 0 0 16px;
+            font-size: 15px;
+        }
+
+        .highlight {
+            background: #fff1f2;
+            border-left: 4px solid #e11d48;
+            padding: 15px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 20px 0;
+        }
+
+        .footer {
+            background: #881337;
+            padding: 20px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Actualización sobre tu cuenta</h1>
+        </div>
+        <div class="body">
+            <p>Hola <strong>{{ name }}</strong>,</p>
+            <p>Tras revisar los datos y documentos proporcionados en tu registro como Doctor Asociado, lamentamos
+                informarte que tu solicitud no ha podido ser aprobada en este momento.</p>
+            <div class="highlight">
+                <p style="margin: 0; font-size: 14px;"><strong>¿Por qué puede suceder esto?</strong></p>
+                <ul style="margin: 8px 0 0; padding-left: 20px; font-size: 14px; color: #555;">
+                    <li>No pudimos validar tu cédula profesional.</li>
+                    <li>Alguno de los datos enviados no coincide con los registros oficiales.</li>
+                </ul>
+            </div>
+            <p>Si crees que esto es un error, por favor ponte en contacto con nuestro laboratorio directamente.</p>
+            <p style="font-size: 14px; color: #666;">— El equipo de Radiograph Xpress</p>
+        </div>
+        <div class="footer">
+            &copy; 2026 Radiograph Xpress. Todos los derechos reservados.
+        </div>
+    </div>
+</body>
+
+</html>

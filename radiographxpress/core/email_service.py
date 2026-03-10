@@ -131,3 +131,39 @@ def send_study_completed_email(study):
         # Still send the email without attachment
     
     email.send(fail_silently=False)
+
+
+def send_doctor_approved_email(user):
+    """Send an email notifying the associate doctor that their account was approved."""
+    subject = '¡Tu cuenta ha sido aprobada! — Radiograph Xpress'
+    html_message = render_to_string('core/emails/doctor_approved_email.html', {
+        'user': user,
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.DEFAULT_FROM_EMAIL,
+        [user.email],
+        html_message=html_message,
+        fail_silently=False,
+    )
+
+
+def send_doctor_denied_email(email, name):
+    """Send an email notifying the associate doctor that their account was not approved."""
+    subject = 'Solicitud de cuenta — Radiograph Xpress'
+    html_message = render_to_string('core/emails/doctor_denied_email.html', {
+        'name': name,
+    })
+    plain_message = strip_tags(html_message)
+    
+    send_mail(
+        subject,
+        plain_message,
+        settings.DEFAULT_FROM_EMAIL,
+        [email],
+        html_message=html_message,
+        fail_silently=False,
+    )

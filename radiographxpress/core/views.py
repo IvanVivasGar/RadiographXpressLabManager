@@ -26,7 +26,20 @@ def verify_email(request, token):
     except User.DoesNotExist:
         return render(request, 'core/emails/verification_failed.html')
     
-    # Activate the user
+    # Activate the user (unless associate doctor — needs assistant approval)
+    if hasattr(user, 'associate_doctor_profile'):
+        # Mark email verified but keep account inactive until assistant approves
+        user.associate_doctor_profile.is_email_verified = True
+        user.associate_doctor_profile.save()
+        
+        # Notify assistants that a new doctor is pending approval
+        from core.notifications import notify_doctor_pending_approval
+        notify_doctor_pending_approval(user.associate_doctor_profile)
+        
+        messages.success(request, 'Tu correo ha sido verificado. Tu cuenta está pendiente de aprobación por el laboratorio.')
+        return render(request, 'core/emails/verification_pending_approval.html')
+    
+    # For all other roles (patients, etc.) — activate immediately
     user.is_active = True
     user.save()
     
@@ -34,9 +47,6 @@ def verify_email(request, token):
     if hasattr(user, 'patient_profile'):
         user.patient_profile.is_email_verified = True
         user.patient_profile.save()
-    elif hasattr(user, 'associate_doctor_profile'):
-        user.associate_doctor_profile.is_email_verified = True
-        user.associate_doctor_profile.save()
     
     # Send welcome email
     send_welcome_email(user)

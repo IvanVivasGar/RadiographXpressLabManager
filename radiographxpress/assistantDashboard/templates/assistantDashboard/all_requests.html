@@ -1,0 +1,219 @@
+{% extends 'assistantDashboard/base.html' %}
+{% load static %}
+
+{% block title %}Todas las Solicitudes - Asistente{% endblock %}
+
+{% block head %}
+<style>
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: -1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+        font-size: 1.6rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin: 0;
+    }
+
+    .btn-new {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 24px;
+        background: linear-gradient(135deg, var(--brand-gradient-start), var(--brand-gradient-end));
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-new:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(194, 24, 91, 0.3);
+    }
+
+    .table-container {
+        background: var(--bg-white);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+    }
+
+    .requests-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 13px;
+    }
+
+    .requests-table th {
+        background: var(--bg-page);
+        padding: 14px 16px;
+        text-align: left;
+        font-weight: 600;
+        color: var(--text-primary);
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .requests-table td {
+        padding: 14px 16px;
+        color: var(--text-primary);
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .requests-table tbody tr:hover {
+        background: #fafafa;
+    }
+
+    .requests-table .text-muted {
+        color: var(--text-secondary);
+        font-style: italic;
+    }
+
+    .btn-print-table {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 12px;
+        background: var(--bg-page);
+        color: var(--text-primary);
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        font-size: 12px;
+        text-decoration: none;
+        transition: background 0.15s;
+    }
+
+    .btn-print-table:hover {
+        background: #e5e7eb;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-white);
+        border-radius: 12px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        color: var(--text-secondary);
+        font-size: 15px;
+    }
+
+    .empty-icon {
+        font-size: 48px;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+        margin-top: 2rem;
+    }
+
+    .page-link {
+        padding: 8px 12px;
+        background: var(--bg-white);
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        color: var(--text-primary);
+        text-decoration: none;
+        font-size: 13px;
+        transition: background 0.15s;
+    }
+
+    .page-link:hover {
+        background: #f8fafc;
+    }
+
+    .page-link.active {
+        background: var(--brand-gradient-end);
+        color: #fff;
+        border-color: var(--brand-gradient-end);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-title">Todas las Solicitudes</h1>
+    <a href="{% url 'new_study_request' %}" class="btn-new">＋ Nueva Solicitud</a>
+</div>
+
+{% if study_requests %}
+<div class="table-container">
+    <table class="requests-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Paciente</th>
+                <th>Estudio</th>
+                <th>Diagnóstico</th>
+                <th>Doctor Asociado</th>
+                <th>Fecha</th>
+                <th>Ticket</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for req in study_requests %}
+            <tr>
+                <td>{{ req.pk }}</td>
+                <td>{{ req.id_patient.first_name }} {{ req.id_patient.last_name }}</td>
+                <td>{{ req.requested_study }}</td>
+                <td>{{ req.diagnosis }}</td>
+                <td>
+                    {% if req.id_associate_doctor %}
+                    {{ req.id_associate_doctor.user.first_name }} {{ req.id_associate_doctor.user.last_name }}
+                    {% else %}
+                    <span class="text-muted">—</span>
+                    {% endif %}
+                </td>
+                <td>{{ req.created_at|date:"d/m/Y H:i"|default:"—" }}</td>
+                <td>
+                    {% if req.is_ticket_printable %}
+                    <a href="{% url 'print_ticket' req.pk %}" target="_blank" class="btn-print-table">🖨️ Imprimir</a>
+                    {% else %}
+                    <span class="text-muted">Expirado</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if is_paginated %}
+<div class="pagination">
+    {% if page_obj.has_previous %}
+    <a href="?page={{ page_obj.previous_page_number }}" class="page-link">&laquo; Anterior</a>
+    {% endif %}
+
+    {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+    <span class="page-link active">{{ num }}</span>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %} <a href="?page={{ num }}"
+        class="page-link">{{ num }}</a>
+        {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}" class="page-link">Siguiente &raquo;</a>
+        {% endif %}
+</div>
+{% endif %}
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">📋</div>
+    <p>No hay solicitudes de estudio registradas en el sistema.</p>
+    <a href="{% url 'new_study_request' %}" class="btn-new" style="margin-top: 1rem;">＋ Crear Primera Solicitud</a>
+</div>
+{% endif %}
+{% endblock %}

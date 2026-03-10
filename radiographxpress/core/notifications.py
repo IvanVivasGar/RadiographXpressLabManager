@@ -123,3 +123,41 @@ def notify_studies_unlocked(study_ids, doctor, patient_user_ids=None):
     if patient_user_ids:
         for pid in patient_user_ids:
             _send_to_group(f'patient_{pid}', 'studies_unlocked', 'Tu estudio ha vuelto a estado pendiente', data)
+
+
+def notify_doctor_pending_approval(doctor):
+    """
+    An associate doctor verified their email and is pending assistant approval.
+    Notify: all assistants.
+    """
+    data = {
+        'doctor_id': doctor.pk,
+        'doctor_name': f'{doctor.user.first_name} {doctor.user.last_name}',
+        'professional_id': doctor.professional_id or '',
+        'university': doctor.university or '',
+        'phone': doctor.phone or '',
+        'email': doctor.user.email or '',
+    }
+    _send_to_group('assistant_all', 'doctor_pending_approval', 'Nuevo doctor pendiente de aprobación', data)
+
+
+def notify_doctor_approved(doctor):
+    """
+    An assistant approved an associate doctor.
+    Notify: all assistants (to live-remove the pending card).
+    """
+    data = {
+        'doctor_id': doctor.pk,
+    }
+    _send_to_group('assistant_all', 'doctor_approved', 'Doctor aprobado', data)
+
+
+def notify_doctor_denied(doctor_pk):
+    """
+    An assistant denied an associate doctor.
+    Notify: all assistants (to live-remove the pending card).
+    """
+    data = {
+        'doctor_id': doctor_pk,
+    }
+    _send_to_group('assistant_all', 'doctor_denied', 'Doctor rechazado', data)

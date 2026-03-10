@@ -141,6 +141,9 @@
             report_locked: '🔒',
             studies_unlocked: '🔓',
             study_request_created: '📋',
+            doctor_pending_approval: 'MD',
+            doctor_approved: 'OK',
+            doctor_denied: 'X',
             info: 'ℹ️',
         };
         const CSS_CLASS = {
@@ -149,6 +152,9 @@
             report_locked: 'ws-toast-locked',
             studies_unlocked: 'ws-toast-study',
             study_request_created: 'ws-toast-request',
+            doctor_pending_approval: 'ws-toast-request',
+            doctor_approved: 'ws-toast-report',
+            doctor_denied: 'ws-toast-locked',
         };
 
         // ── Toast display ──
@@ -260,7 +266,8 @@
                     // New study request → refresh the assistant dashboard to show it
                     {
                         const assistantDashEl = document.querySelector('.dashboard-layout .tickets-sidebar');
-                        if (assistantDashEl) {
+                        const allRequestsEl = document.querySelector('.requests-table') || document.querySelector('.table-container');
+                        if (assistantDashEl || allRequestsEl) {
                             setTimeout(refreshPage, 1000);
                         }
                     }
@@ -283,6 +290,39 @@
                         const studiesGridEl = document.querySelector('.studies-grid');
                         if (doctorPendingEl || studiesGridEl) {
                             setTimeout(refreshPage, 1000);
+                        }
+                    }
+                    break;
+
+                case 'doctor_pending_approval':
+                    // Refresh the assistant dashboard to show the new pending doctor
+                    {
+                        const assistantDashEl = document.querySelector('.dashboard-layout .tickets-sidebar');
+                        if (assistantDashEl) {
+                            // Instead of building complex DOM, we just refresh the page for the assistant
+                            // This ensures the template logic (cards, styling, action URLs) remains consistent
+                            setTimeout(refreshPage, 1000);
+                        }
+                    }
+                    break;
+                case 'doctor_approved':
+                case 'doctor_denied':
+                    // Remove the pending doctor card
+                    {
+                        if (data.doctor_id) {
+                            const cardSelector = `[data-doctor-id="${data.doctor_id}"]`;
+                            const cardEl = document.querySelector(cardSelector);
+                            if (cardEl) {
+                                cardEl.classList.add('ws-dom-removing');
+                                setTimeout(() => {
+                                    cardEl.remove();
+                                    const grid = document.getElementById('pendingDoctorsGrid');
+                                    if (grid && grid.children.length === 0) {
+                                        const section = document.getElementById('pendingDoctorsSection');
+                                        if (section) section.remove();
+                                    }
+                                }, 400);
+                            }
                         }
                     }
                     break;

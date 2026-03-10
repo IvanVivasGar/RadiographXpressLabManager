@@ -119,3 +119,64 @@ def create_patient(request):
             'phone': phone,
         }
     })
+
+
+@login_required
+@require_POST
+def verify_doctor(request):
+    """
+    Approve or deny an associate doctor account.
+    If approved, activates account and sends welcome email.
+    If denied, deletes account and sends rejection email.
+    """
+    from associateDoctorDashboard.models import AssociateDoctor
+    from core.notifications import notify_doctor_approved, notify_doctor_denied
+    from core.email_service import send_doctor_approved_email, send_doctor_denied_email
+
+    doctor_id = request.POST.get('doctor_id')
+    action = request.POST.get('action')
+
+    if action not in ['approve', 'deny']:
+        return JsonResponse({'success': False, 'error': 'Acción inválida.'}, status=400)
+
+    try:
+        doctor = AssociateDoctor.objects.get(pk=doctor_id)
+        user = doctor.user
+    except AssociateDoctor.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Doctor no encontrado.'}, status=404)
+
+    if action == 'approve':
+        doctor.is_verified = True
+        doctor.save()
+
+        user.is_active = True
+        user.save()
+
+        # Send WS notification and email
+        notify_doctor_approved(doctor)
+        try:
+            send_doctor_approved_email(user)
+        except Exception as e:
+            # We don't want a failed email to break the approval flow
+            pass
+
+        return JsonResponse({'success': True, 'message': 'Doctor aprobado exitosamente.'})
+
+    elif action == 'deny':
+        # Store data for email/WS before deleting
+        doctor_pk = doctor.pk
+        doctor_email = user.email
+        doctor_name = f"{user.first_name} {user.last_name}"
+
+        # Delete associate doctor profile and the underlying user
+        doctor.delete()
+        user.delete()
+
+        # Send WS notification and email
+        notify_doctor_denied(doctor_pk)
+        try:
+            send_doctor_denied_email(doctor_email, doctor_name)
+        except Exception as e:
+            pass
+
+        return JsonResponse({'success': True, 'message': 'Doctor rechazado y eliminado exitosamente.'})
