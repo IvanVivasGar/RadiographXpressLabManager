@@ -24,11 +24,10 @@ class PatientDashboardView(PatientRequiredMixin, ListView):
         # We need the patient profile to filter studies
         if hasattr(self.request.user, 'patient_profile'):
             patient = self.request.user.patient_profile
-            # Show studies for this patient that have a report (completed diagnosis)
+            # Show all studies for this patient
             return Study.objects.filter(
                 id_patient=patient,
-                id_report__isnull=False
-            ).order_by('-date')
+            ).select_related('id_report').order_by('-date')
         return Study.objects.none()
 
 class PatientProfileView(PatientRequiredMixin, DetailView):

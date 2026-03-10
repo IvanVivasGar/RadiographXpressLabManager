@@ -56,7 +56,13 @@ class StudyRequestCreateView(AssistantRequiredMixin, CreateView):
         
         form.instance.id_patient = patient
         messages.success(self.request, 'Solicitud de estudio creada exitosamente.')
-        return super().form_valid(form)
+        response = super().form_valid(form)
+
+        # Notify via WebSocket
+        from core.notifications import notify_study_request_created
+        notify_study_request_created(self.object)
+
+        return response
 
 
 class AssistantProfileView(AssistantRequiredMixin, DetailView):

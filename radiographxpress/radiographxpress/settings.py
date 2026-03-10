@@ -46,18 +46,29 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'channels',
     'doctorsDashboard.apps.DoctorsdashboardConfig',
     'assistantDashboard.apps.AssistantdashboardConfig',
     'patientsDashboard.apps.PatientsdashboardConfig',
     'associateDoctorDashboard.apps.AssociatedoctordashboardConfig',
     'core.apps.CoreConfig',
 ]
+
+# Django Channels
+ASGI_APPLICATION = 'radiographxpress.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

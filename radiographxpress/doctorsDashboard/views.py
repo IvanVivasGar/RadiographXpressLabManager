@@ -119,6 +119,10 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
             except Exception as e:
                 print(f"Error sending study completion email: {e}")
 
+        # 7. Notify via WebSocket
+        from core.notifications import notify_report_completed
+        notify_report_completed(self.object, self.study)
+
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -161,6 +165,10 @@ def lock_study(request, study_id):
         # Link to Study
         study.id_report = report
         study.save()
+
+        # Notify all doctors via WebSocket
+        from core.notifications import notify_report_locked
+        notify_report_locked(study, doctor)
         
         return JsonResponse({'status': 'ok'})
         
@@ -186,11 +194,16 @@ def doctor_logout(request):
                     doctor_in_charge=doctor
                 )
                 
+                unlocked_study_ids = []
+                patient_user_ids = set()
+
                 for report in reports_in_progress:
                     # 1. Find associated studies
                     # Note: Study.id_report is a ForeignKey to Report.
-                    studies = Study.objects.filter(id_report=report)
+                    studies = Study.objects.filter(id_report=report).select_related('id_patient__user')
                     for study in studies:
+                        unlocked_study_ids.append(study.id_study)
+                        patient_user_ids.add(study.id_patient.user.id)
                         # CRITICAL: Unlink the report from the study so deleting the report doesn't cascade delete the study
                         # Because on_delete=models.CASCADE is set on Study.id_report
                         study.id_report = None
@@ -198,6 +211,11 @@ def doctor_logout(request):
                     
                     # 2. Delete the report draft
                     report.delete()
+
+                # 3. Notify other doctors and affected patients that studies are available again
+                if unlocked_study_ids:
+                    from core.notifications import notify_studies_unlocked
+                    notify_studies_unlocked(unlocked_study_ids, doctor, list(patient_user_ids))
                     
         except Exception as e:
             # Log error but proceed with logout

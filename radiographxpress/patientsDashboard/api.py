@@ -30,6 +30,9 @@ def doctor_search(request):
             'id': d.pk,
             'name': str(d),
             'university': d.university or '',
+            'professional_id': d.professional_id or '',
+            'phone': d.phone or '',
+            'email': d.user.email or '',
         }
         for d in doctors
     ]

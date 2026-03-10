@@ -16,7 +16,7 @@ class AssociateDoctor(models.Model):
     # email field removed
     address = models.CharField(max_length=100)
     phone = models.CharField(max_length=100)
-    professional_id = models.CharField(max_length=100, null=True, blank=True)
+    professional_id = models.CharField(max_length=100, null=True, blank=True, unique=True)
     university = models.CharField(max_length=100, null=True, blank=True)
     is_email_verified = models.BooleanField(default=False)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default=OTHER)

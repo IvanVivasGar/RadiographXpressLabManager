@@ -23,11 +23,11 @@
         <!-- Grid View Container -->
         <div class="studies-grid" id="studiesGridView">
             {% for study in studies %}
-                {% url 'studyReportCreate' study.pk as report_url %}
+            {% url 'studyReportCreate' study.pk as report_url %}
 
-                {% with first=study.id_patient.first_name last=study.id_patient.last_name %}
-                {% include "core/components/study_card.html" with study_url=report_url pacs_url=study.pacs_url title=first|add:" "|add:last %}
-                {% endwith %}
+            {% with first=study.id_patient.first_name last=study.id_patient.last_name %}
+            {% include "core/components/study_card.html" with study_url=report_url pacs_url=study.pacs_url title=first|add:" "|add:last study_id=study.pk %}
+            {% endwith %}
 
             {% empty %}
             <p style="text-align: center; width: 100%; color: #999;">No hay estudios pendientes.</p>
@@ -37,10 +37,10 @@
         <!-- List View Container (Hidden by default) -->
         <div class="studies-list" id="studiesListView" style="display: none;">
             {% for study in studies %}
-                {% url 'studyReportCreate' study.pk as report_url %}
-                {% with first=study.id_patient.first_name last=study.id_patient.last_name %}
-                {% include "core/components/study_list_item.html" with study_url=report_url title=first|add:" "|add:last date=study.date %}
-                {% endwith %}
+            {% url 'studyReportCreate' study.pk as report_url %}
+            {% with first=study.id_patient.first_name last=study.id_patient.last_name %}
+            {% include "core/components/study_list_item.html" with study_url=report_url title=first|add:" "|add:last date=study.date study_id=study.pk %}
+            {% endwith %}
             {% empty %}
             <p style="text-align: center; width: 100%; color: #999;">No hay estudios pendientes.</p>
             {% endfor %}

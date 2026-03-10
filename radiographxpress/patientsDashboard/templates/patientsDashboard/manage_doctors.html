@@ -159,18 +159,19 @@
 
     .doctor-card {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         padding: 14px 18px;
         background: var(--bg-white);
         border-radius: 10px;
         box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
         border-left: 4px solid var(--brand-gradient-start);
-        transition: box-shadow 0.15s;
+        transition: box-shadow 0.2s, border-color 0.2s;
     }
 
     .doctor-card:hover {
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1);
+        border-left-color: var(--brand-gradient-end);
     }
 
     .doctor-card .doctor-info-name {
@@ -183,6 +184,40 @@
         font-size: 12px;
         color: var(--text-secondary);
         margin-top: 2px;
+    }
+
+    .doctor-extra-details {
+        display: grid;
+        grid-template-rows: 0fr;
+        transition: grid-template-rows 0.3s ease, opacity 0.3s ease, margin-top 0.3s ease;
+        opacity: 0;
+        margin-top: 0;
+    }
+
+    .doctor-extra-details>.details-inner {
+        overflow: hidden;
+    }
+
+    .doctor-card:hover .doctor-extra-details {
+        grid-template-rows: 1fr;
+        opacity: 1;
+        margin-top: 6px;
+    }
+
+    .detail-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text-secondary);
+        padding: 2px 0;
+    }
+
+    .detail-row .detail-icon {
+        font-size: 13px;
+        width: 16px;
+        text-align: center;
+        flex-shrink: 0;
     }
 
     .btn-revoke {
@@ -270,8 +305,21 @@
                 <div>
                     <div class="doctor-info-name">{{ doc }}</div>
                     <div class="doctor-info-detail">{{ doc.university|default:"" }}</div>
+                    <div class="doctor-extra-details">
+                        <div class="details-inner">
+                            {% if doc.professional_id %}
+                            <div class="detail-row"><span class="detail-icon">🪪</span> Cédula: {{ doc.professional_id }}</div>
+                            {% endif %}
+                            {% if doc.phone %}
+                            <div class="detail-row"><span class="detail-icon">📞</span> {{ doc.phone }}</div>
+                            {% endif %}
+                            {% if doc.user.email %}
+                            <div class="detail-row"><span class="detail-icon">✉️</span> {{ doc.user.email }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
-                <button class="btn-revoke" onclick="toggleDoctor({{ doc.pk }}, 'revoke', this)">✕ Revocar</button>
+                <button class="btn-revoke" data-doctor-id="{{ doc.pk }}">✕ Revocar</button>
             </div>
             {% empty %}
             <div class="empty-state" id="emptyState">
@@ -319,6 +367,9 @@
                                 <div class="result-info">
                                     <div class="result-name">${d.name}</div>
                                     <div class="result-detail">${d.university || ''}</div>
+                                    ${d.professional_id ? `<div class="result-detail">Cédula: ${d.professional_id}</div>` : ''}
+                                    ${d.phone ? `<div class="result-detail">Tel: ${d.phone}</div>` : ''}
+                                    ${d.email ? `<div class="result-detail">${d.email}</div>` : ''}
                                 </div>
                             `;
                                 const btn = document.createElement('button');
@@ -340,6 +391,14 @@
         document.addEventListener('click', function (e) {
             if (!searchWrapper.contains(e.target)) {
                 searchResults.classList.remove('open');
+            }
+        });
+
+        // Delegated click handler for server-rendered revoke buttons
+        doctorsList.addEventListener('click', function (e) {
+            const btn = e.target.closest('.btn-revoke');
+            if (btn && btn.dataset.doctorId) {
+                toggleDoctor(parseInt(btn.dataset.doctorId), 'revoke', btn);
             }
         });
 
@@ -373,8 +432,15 @@
                     <div>
                         <div class="doctor-info-name">${doctorData.name}</div>
                         <div class="doctor-info-detail">${doctorData.university || ''}</div>
+                        <div class="doctor-extra-details">
+                            <div class="details-inner">
+                                ${doctorData.professional_id ? `<div class="detail-row"><span class="detail-icon">🪪</span> Cédula: ${doctorData.professional_id}</div>` : ''}
+                                ${doctorData.phone ? `<div class="detail-row"><span class="detail-icon">📞</span> Tel: ${doctorData.phone}</div>` : ''}
+                                ${doctorData.email ? `<div class="detail-row"><span class="detail-icon">✉️</span> ${doctorData.email}</div>` : ''}
+                            </div>
+                        </div>
                     </div>
-                    <button class="btn-revoke" onclick="toggleDoctor(${doctorId}, 'revoke', this)">✕ Revocar</button>
+                    <button class="btn-revoke" data-doctor-id="${doctorId}">✕ Revocar</button>
                 `;
                         doctorsList.appendChild(card);
                         updateCount(1);

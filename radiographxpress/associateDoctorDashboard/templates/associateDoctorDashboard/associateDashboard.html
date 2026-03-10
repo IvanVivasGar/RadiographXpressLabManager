@@ -26,7 +26,13 @@
                 <div class="studies-carousel">
                     {% for study in patient.study_set.all|dictsortreversed:"date" %} <!-- Ordered by date desc -->
                         {% url 'studyDetail' study.id_study as study_detail_url %}
-                        {% include "core/components/study_card.html" with study_url=study_detail_url pacs_url=study.pacs_url date=study.date title=study.id_report.about|default:"Pendiente de reporte" status=study.id_report|yesno:"completed,pending" extra_classes="study-card-carousel" %}
+                        {% if study.id_report and study.id_report.status == 'PRO' %}
+                            {% include "core/components/study_card.html" with study_url=study_detail_url pacs_url=study.pacs_url date=study.date title="Estudio en progreso" status="in_progress" blocked=True extra_classes="study-card-carousel" study_id=study.id_study %}
+                        {% elif study.id_report and study.id_report.status == 'COM' %}
+                            {% include "core/components/study_card.html" with study_url=study_detail_url pacs_url=study.pacs_url date=study.date title=study.id_report.about|default:"Reporte Completado" status="completed" extra_classes="study-card-carousel" study_id=study.id_study %}
+                        {% else %}
+                            {% include "core/components/study_card.html" with study_url=study_detail_url pacs_url=study.pacs_url date=study.date title="Pendiente de reporte" status="pending" blocked=True extra_classes="study-card-carousel" study_id=study.id_study %}
+                        {% endif %}
                     {% endfor %}
                 </div>
                 {% else %}

@@ -1,23 +1,38 @@
-<a href="{{ study_url }}" class="study-card {{ extra_classes }}">
-    <iframe class="study-card-image" src="{{ pacs_url }}" scrolling="no" frameborder="0"></iframe>
-    <div class="study-card-overlay"></div>
-    <div class="study-card-info">
-        {% if date %}
-        <p class="study-date">{{ date|date:"d M Y" }}</p>
+{% if blocked %}
+<div class="study-card {{ extra_classes }} study-card-blocked" data-study-id="{{ study_id }}">
+    {% else %}
+    <a href="{{ study_url }}" class="study-card {{ extra_classes }}" data-study-id="{{ study_id }}">
         {% endif %}
+        <iframe class="study-card-image" src="{{ pacs_url }}" scrolling="no" frameborder="0"></iframe>
+        <div class="study-card-overlay"></div>
+        {% if blocked %}
+        <div class="study-card-lock-overlay">
+            <span class="lock-text">En Progreso</span>
+        </div>
+        {% endif %}
+        <div class="study-card-info">
+            {% if date %}
+            <p class="study-date">{{ date|date:"d M Y" }}</p>
+            {% endif %}
 
-        <p class="patient-name">{{ title }}</p>
+            <p class="patient-name">{{ title }}</p>
 
-        {% if subtitle %}
-        <p class="study-date" style="font-size: 13px; opacity: 0.8;">{{ subtitle }}</p>
-        {% endif %}
+            {% if subtitle %}
+            <p class="study-date" style="font-size: 13px; opacity: 0.8;">{{ subtitle }}</p>
+            {% endif %}
 
-        {% if status %}
-        {% if status == 'completed' %}
-        <span class="status-badge completed">Completado</span>
-        {% elif status == 'pending' %}
-        <span class="status-badge pending">Pendiente</span>
-        {% endif %}
-        {% endif %}
-    </div>
+            {% if status %}
+            {% if status == 'completed' %}
+            <span class="status-badge completed">Completado</span>
+            {% elif status == 'pending' %}
+            <span class="status-badge pending">Pendiente</span>
+            {% elif status == 'in_progress' %}
+            <span class="status-badge in-progress">En Progreso</span>
+            {% endif %}
+            {% endif %}
+        </div>
+        {% if blocked %}
+</div>
+{% else %}
 </a>
+{% endif %}
