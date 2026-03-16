@@ -353,19 +353,20 @@
         </div>
         <div class="tickets-list">
             {% for req in active_tickets %}
-            <div class="ticket-card">
+            <div class="ticket-card" id="ticket-{{ req.pk }}">
                 <div class="patient-name">{{ req.id_patient.first_name }} {{ req.id_patient.last_name }}</div>
                 <div class="study-type">{{ req.requested_study }}</div>
                 <div class="ticket-meta">
                     <span class="ticket-time">{{ req.created_at|date:"d/m/Y H:i" }}</span>
                     {% if req.first_printed_at %}
-                    <span class="ticket-status status-printed">Impreso</span>
+                    <span class="ticket-status status-printed" id="status-{{ req.pk }}">Impreso</span>
                     {% else %}
-                    <span class="ticket-status status-new">Nuevo</span>
+                    <span class="ticket-status status-new" id="status-{{ req.pk }}">Nuevo</span>
                     {% endif %}
                 </div>
-                <a href="{% url 'print_ticket' req.pk %}" target="_blank" class="btn-print-sm">
-                    🖨️ {% if req.first_printed_at %}Reimprimir{% else %}Imprimir{% endif %}
+                <a href="{% url 'print_ticket' req.pk %}" target="_blank" class="btn-print-sm" id="btn-{{ req.pk }}"
+                    onclick="updateTicketDesign('{{ req.pk }}')">
+                    🖨️ <span id="btn-text-{{ req.pk }}">{% if req.first_printed_at %}Reimprimir{% else %}Imprimir{% endif %}</span>
                 </a>
             </div>
             {% empty %}
@@ -447,6 +448,25 @@
             alert('Error de conexión al procesar la solicitud.');
             buttons.forEach(btn => btn.disabled = false);
             buttonEl.innerText = originalText;
+        }
+    }
+
+    // Function to immediately update the active ticket UI to 'Printed' / 'Reprint' when the button is clicked
+    function updateTicketDesign(ticketId) {
+        // Find the status element
+        const statusEl = document.getElementById(`status-${ticketId}`);
+        if (statusEl) {
+            // Update appearance from "Nuevo" to "Impreso"
+            statusEl.classList.remove('status-new');
+            statusEl.classList.add('status-printed');
+            statusEl.innerText = 'Impreso';
+        }
+
+        // Find the button text element
+        const btnTextEl = document.getElementById(`btn-text-${ticketId}`);
+        if (btnTextEl) {
+            // Update appearance from "Imprimir" to "Reimprimir"
+            btnTextEl.innerText = 'Reimprimir';
         }
     }
 </script>

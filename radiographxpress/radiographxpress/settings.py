@@ -163,7 +163,7 @@ STATICFILES_DIRS = [
 ]
 
 # Media files
-USE_S3 = env.bool('USE_S3', default=False)
+USE_S3 = env.bool('USE_S3', default=True)
 
 if USE_S3:
     # AWS S3 Settings
@@ -179,7 +179,7 @@ if USE_S3:
     # Optional: Serve static files from S3 as well (currently keeping static local as requested)
     # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
     
-    MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
+    MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
 else:
     # Local Storage Settings
     MEDIA_URL = '/media/'
