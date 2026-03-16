@@ -12,6 +12,8 @@ class ReportingDoctor(models.Model):
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='reporting_doctor_profile')
     id_doctor = models.AutoField(primary_key=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
+    signature = models.ImageField(upload_to='signatures/', null=True, blank=True)
     # name and last name are in the user model
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default=OTHER)
     # email field removed

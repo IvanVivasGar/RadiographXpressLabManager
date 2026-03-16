@@ -47,6 +47,7 @@ CSRF_TRUSTED_ORIGINS = env.list('CSRF_TRUSTED_ORIGINS')
 
 INSTALLED_APPS = [
     'daphne',
+    'core.apps.CoreConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -58,7 +59,6 @@ INSTALLED_APPS = [
     'assistantDashboard.apps.AssistantdashboardConfig',
     'patientsDashboard.apps.PatientsdashboardConfig',
     'associateDoctorDashboard.apps.AssociatedoctordashboardConfig',
-    'core.apps.CoreConfig',
 ]
 
 # Django Channels
@@ -161,6 +161,29 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles') # Changed to avoid conflict
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# Media files
+USE_S3 = env.bool('USE_S3', default=False)
+
+if USE_S3:
+    # AWS S3 Settings
+    AWS_ACCESS_KEY_ID = env('AWS_ACCESS_KEY_ID', default='')
+    AWS_SECRET_ACCESS_KEY = env('AWS_SECRET_ACCESS_KEY', default='')
+    AWS_STORAGE_BUCKET_NAME = env('AWS_STORAGE_BUCKET_NAME', default='my-bucket-name')
+    AWS_S3_REGION_NAME = env('AWS_S3_REGION_NAME', default='us-east-1')
+    AWS_S3_FILE_OVERWRITE = False
+    AWS_DEFAULT_ACL = None
+    AWS_S3_VERIFY = True
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    
+    # Optional: Serve static files from S3 as well (currently keeping static local as requested)
+    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
+    
+    MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/'
+else:
+    # Local Storage Settings
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
 # Email Configuration (Gmail SMTP)

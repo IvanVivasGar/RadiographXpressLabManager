@@ -12,6 +12,7 @@ class Patient(models.Model):
     ]
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, related_name='patient_profile')
     id_patient = models.AutoField(primary_key=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', null=True, blank=True)
     # name and last name are in the user model
     # password field removed
     # email field removed

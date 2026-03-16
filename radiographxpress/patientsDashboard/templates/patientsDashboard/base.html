@@ -45,8 +45,13 @@
                     {% else %}
                     <span class="welcome-text">Bienvenido, {{ user.first_name }}</span>
                     {% endif %}
+                    {% if user.patient_profile.profile_picture %}
+                    <img src="{{ user.patient_profile.profile_picture.url }}" alt="Profile" class="user-avatar"
+                        style="width: 35px; height: 35px; object-fit: cover; border-radius: 50%;">
+                    {% else %}
                     <img src="https://ui-avatars.com/api/?name={{ user.first_name|default:'User' }}&background=0D8ABC&color=fff&rounded=true&bold=true"
                         alt="Profile" class="user-avatar">
+                    {% endif %}
                 </a>
             </div>
         </nav>
