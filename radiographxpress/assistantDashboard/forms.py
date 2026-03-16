@@ -16,9 +16,8 @@ class StudyRequestForm(forms.ModelForm):
                 'class': 'form-input',
                 'placeholder': 'Ingrese el diagnóstico',
             }),
-            'requested_study': forms.TextInput(attrs={
+            'requested_study': forms.Select(attrs={
                 'class': 'form-input',
-                'placeholder': 'Ej: Radiografía de Tórax',
             }),
             'id_associate_doctor': forms.Select(attrs={
                 'class': 'form-input',

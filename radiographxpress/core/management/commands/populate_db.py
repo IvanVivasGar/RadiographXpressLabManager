@@ -150,7 +150,7 @@ class Command(BaseCommand):
         return patients
 
     def create_studies(self, patients, associate_doctors, reporting_doctors):
-        study_types = ["Chest X-Ray", "MRI Brain", "CT Scan Abdomen", "Ultrasound"]
+        study_types = ["Torax PA", "Mamografía", "Marcaje de Mama", "Abdomen Superior", "AngioTac"]
         
         for patient in patients:
             num_studies = random.randint(1, 3)
