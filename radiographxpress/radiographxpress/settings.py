@@ -174,10 +174,17 @@ if USE_S3:
     AWS_S3_FILE_OVERWRITE = False
     AWS_DEFAULT_ACL = None
     AWS_S3_VERIFY = True
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
     
     # Optional: Serve static files from S3 as well (currently keeping static local as requested)
-    # STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' 
+    # STORAGES["staticfiles"]["BACKEND"] = "storages.backends.s3boto3.S3Boto3Storage" 
     
     MEDIA_URL = f'https://{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com/'
 else:

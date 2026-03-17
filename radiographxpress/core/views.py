@@ -9,6 +9,64 @@ from .email_service import _verify_token, send_welcome_email
 import os
 import base64
 from django.conf import settings
+import json
+from django.core.files.base import ContentFile
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+
+@login_required
+@require_POST
+def update_profile_picture(request):
+    """
+    Receives a base64 encoded cropped image string and saves it the correct user profile.
+    """
+    try:
+        data = json.loads(request.body)
+        image_data = data.get('image_data')
+
+        if not image_data:
+            return JsonResponse({'success': False, 'error': 'No image data provided'}, status=400)
+
+        # Ensure base64 padding/headers are handled
+        format, imgstr = image_data.split(';base64,') 
+        ext = format.split('/')[-1]
+
+        # Max 5MB Verification (backend safety check on raw base64 string length approximation)
+        if len(imgstr) * 0.75 > 5 * 1024 * 1024:
+            return JsonResponse({'success': False, 'error': 'Image exceeds 5MB limit'}, status=400)
+
+        user = request.user
+        photo_name = f"{user.username}_profile.{ext}"
+        photo_file = ContentFile(base64.b64decode(imgstr), name=photo_name)
+
+        # Dynamic role matching to find the correct profile model
+        profile = None
+        if hasattr(user, 'assistant_profile'):
+            profile = user.assistant_profile
+        elif hasattr(user, 'patient_profile'):
+            profile = user.patient_profile
+        elif hasattr(user, 'reporting_doctor_profile'):
+            profile = user.reporting_doctor_profile
+        elif hasattr(user, 'associate_doctor_profile'):
+            profile = user.associate_doctor_profile
+            
+        if not profile:
+            return JsonResponse({'success': False, 'error': 'User profile not found'}, status=404)
+
+        # Save the picture to the model's ImageField
+        if profile.profile_picture:
+            profile.profile_picture.delete(save=False) # remove old if exists
+            
+        profile.profile_picture.save(photo_name, photo_file, save=True)
+
+        return JsonResponse({'success': True, 'url': profile.profile_picture.url})
+
+    except Exception as e:
+        import traceback
+        print("PROFILE UPLOAD ERROR:", str(e))
+        traceback.print_exc()
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    
 # WeasyPrint is lazy-imported in generate_report_pdf to avoid loading at startup
 
 
@@ -150,6 +208,18 @@ def generate_pdf_bytes(report, study):
     if study and study.id_study_request and study.id_study_request.id_associate_doctor:
         associate_doctor = study.id_study_request.id_associate_doctor
 
+    # Load signature image if it exists
+    signature_data_uri = None
+    if doctor and hasattr(doctor, 'signature') and doctor.signature:
+        try:
+            with doctor.signature.open("rb") as image_file:
+                signature_base64 = base64.b64encode(image_file.read()).decode('utf-8')
+            ext = doctor.signature.name.split('.')[-1].lower()
+            if ext == 'jpg': ext = 'jpeg'
+            signature_data_uri = f"data:image/{ext};base64,{signature_base64}"
+        except Exception as e:
+            print(f"Error loading signature for PDF: {e}")
+
     # Render HTML template
     html_string = render_to_string('core/pdf/report_template.html', {
         'report': report,
@@ -159,6 +229,7 @@ def generate_pdf_bytes(report, study):
         'style_tag': style_tag,
         'bg_data_uri': bg_data_uri,
         'logo_data_uri': logo_data_uri,
+        'signature_data_uri': signature_data_uri,
     })
     
     # Lazy import WeasyPrint

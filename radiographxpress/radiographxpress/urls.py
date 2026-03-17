@@ -60,4 +60,5 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     path('login_success/', views.login_success, name='login_success'),
     path('core/', include('core.urls')),
+    path('api/update-profile-picture/', views.update_profile_picture, name='update_profile_picture'),
 ]

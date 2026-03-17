@@ -61,6 +61,9 @@
     <!-- Footer: Doctor Signature + Hardcoded Credentials + Contact -->
     <div class="report-footer">
         <div class="doctor-signature">
+            {% if signature_data_uri %}
+            <img src="{{ signature_data_uri }}" alt="Firma del Doctor" style="max-height: 80px; width: auto; object-fit: contain; margin-bottom: 5px;">
+            {% endif %}
             <p class="name">DRA. {{ doctor.first_name|upper }} {{ doctor.last_name|upper }}</p>
             <p class="title">{{ doctor.specialty|upper }}</p>
             <p class="title">CÉDULA PROFESIONAL: {{ doctor.professional_id }}</p>
