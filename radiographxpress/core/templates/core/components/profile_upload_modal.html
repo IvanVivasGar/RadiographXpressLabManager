@@ -353,7 +353,12 @@
                     document.querySelectorAll('.profile-pic-img, .nav-avatar, .user-avatar').forEach(img => {
                         // Append timestamp to bypass browser caching for the new image url
                         if (img.tagName.toLowerCase() === 'img') {
-                            img.src = `${data.url}?t=${new Date().getTime()}`;
+                            if (data.url.includes('X-Amz-Signature=') || data.url.includes('Signature=')) {
+                                img.src = data.url;
+                            } else {
+                                const separator = data.url.includes('?') ? '&' : '?';
+                                img.src = `${data.url}${separator}t=${new Date().getTime()}`;
+                            }
                         }
                     });
                     closeModal();
