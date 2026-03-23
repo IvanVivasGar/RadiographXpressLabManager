@@ -1,3 +1,9 @@
+"""
+Core Views and Request Handlers
+Handles cross-cutting concerns like universal profile picture uploads, 
+email verification processing, role-based login redirection, 
+and secure PDF report generation.
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template.loader import render_to_string
@@ -18,7 +24,15 @@ from django.views.decorators.http import require_POST
 @require_POST
 def update_profile_picture(request):
     """
-    Receives a base64 encoded cropped image string and saves it the correct user profile.
+    API Endpoint for updating the authenticated user's profile picture.
+    Receives a Base64 encoded, cropped image string from the frontend.
+    
+    Dynamically resolves the user's explicit profile role (Assistant, Patient, 
+    ReportingDoctor, or AssociateDoctor) and saves the image to the correct model.
+    Includes backend size validations to prevent malicious large payloads.
+    
+    Returns:
+        JsonResponse: The new URL of the uploaded profile picture, or an error payload.
     """
     try:
         data = json.loads(request.body)
@@ -72,8 +86,17 @@ def update_profile_picture(request):
 
 def verify_email(request, token):
     """
-    Verifies a user's email using a signed token.
-    Activates the account, marks email as verified, sends welcome email.
+    Validates a cryptographic email verification token clicked by a user.
+    
+    Workflow:
+      1. Decodes and verifies the token's expiration and signature.
+      2. If the user is an Associate Doctor, marks email verified but keeps 
+         their account inactive (awaiting manual admin approval).
+      3. For Patients, activates the account immediately.
+      4. Dispatches a "Welcome" email for instantly activated users.
+    
+    Returns:
+        HttpResponseRender: Redirects to the login page with a success UI message.
     """
     user_pk = _verify_token(token)
     if user_pk is None:
@@ -94,6 +117,7 @@ def verify_email(request, token):
         from core.notifications import notify_doctor_pending_approval
         notify_doctor_pending_approval(user.associate_doctor_profile)
         
+        # DO NOT TRANSLATE UI MESSAGES
         messages.success(request, 'Tu correo ha sido verificado. Tu cuenta está pendiente de aprobación por el laboratorio.')
         return render(request, 'core/emails/verification_pending_approval.html')
     
@@ -109,11 +133,15 @@ def verify_email(request, token):
     # Send welcome email
     send_welcome_email(user)
     
+    # DO NOT TRANSLATE UI MESSAGES
     messages.success(request, '¡Tu correo ha sido verificado exitosamente! Ya puedes iniciar sesión.')
     return redirect('login')
+
 def login_success(request):
     """
-    Redirects users to their specific dashboard based on their group membership.
+    Central router for successfully authenticated logins.
+    Inspects the user's Django Group memberships and safely redirects 
+    them to their respective role-based dashboard.
     """
     if request.user.groups.filter(name='Doctors').exists():
         return redirect('pendingStudies')
@@ -129,6 +157,16 @@ def login_success(request):
 
 @login_required
 def study_detail(request, id_study):
+    """
+    Universal detail viewer for a Radiological Study and its Final Report.
+    
+    Enforces strict Role-Based Access Control (RBAC):
+      - Patients: Can only view their own personal studies.
+      - Associate Docs: Can only view studies involving patients explicitly linked to them.
+      - Reporting Docs & Assistants: Global read access.
+      
+    Hides sensitive download buttons for doctors to prevent data exfiltration.
+    """
     study = get_object_or_404(Study, id_study=id_study)
 
     # Ownership verification: restrict access based on user role
@@ -156,6 +194,9 @@ def study_detail(request, id_study):
     return render(request, 'core/study_report_detail.html', {'study': study, 'hide_download_btn': hide_download_btn})
 
 def logout(request):
+    """
+    Core logout protocol wrapper. Clears local session caches and redirects.
+    """
     logout(request)
     return redirect('login')
 
@@ -163,8 +204,15 @@ def logout(request):
 @login_required
 def generate_report_pdf(request, report_id):
     """
-    Generate a PDF for a completed report.
-    Only allows download if the user owns the report and it's completed.
+    Generates and serves a downloadable PDF file of a COMPLETED medical report.
+    
+    Security Checks:
+      1. Blocks access to Incomplete/Pending reports.
+      2. Explicitly blocks Healthcare personnel from downloading (prevents mass scraping).
+      3. Strictly ensures the requesting Patient owns the target report.
+      
+    Returns:
+        HttpResponse containing the inline PDF binary buffer.
     """
     report = get_object_or_404(Report, id_report=report_id)
     
@@ -201,8 +249,18 @@ def generate_report_pdf(request, report_id):
 
 def generate_pdf_bytes(report, study):
     """
-    Generate PDF bytes for a report. Reusable by both the download view
-    and the email service.
+    Underlying service layer for generating a PDF report dynamically using WeasyPrint.
+    Shared by both the HTTP download view and the asynchronous Email dispatch service.
+    
+    Compiles HTML, CSS templates and injects Base64 image embeddings (Logos, Backgrounds, 
+    Doctor Signatures) directly into the file stream.
+    
+    Args:
+        report (Report): The finalized diagnostic report object.
+        study (Study): The associated study containing patient demographics.
+        
+    Returns:
+        bytes: The compiled raw PDF binary data buffer.
     """
     patient = study.id_patient
     doctor = report.doctor_in_charge

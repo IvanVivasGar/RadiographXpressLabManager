@@ -1,3 +1,8 @@
+"""
+API Endpoints for the Assistant Dashboard.
+Provides AJAX endpoints for dynamically interacting with patient and doctor records
+without reloading the page (e.g., patient search, doctor approval, patient creation).
+"""
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q
@@ -6,11 +11,19 @@ from patientsDashboard.models import Patient
 
 
 def assistant_required(view_func):
-    """Decorator that ensures the user is in the 'Assistants' group."""
+    """
+    Security Decorator that ensures the incoming request belongs to an authenticated
+    user within the 'Assistants' Django Group.
+    
+    Returns a 403 Forbidden JSON response if the user lacks the proper role,
+    protecting critical administrative endpoints from Patients or Doctors.
+    """
     def wrapper(request, *args, **kwargs):
         if not request.user.groups.filter(name='Assistants').exists():
             return JsonResponse({'success': False, 'error': 'No autorizado.'}, status=403)
         return view_func(request, *args, **kwargs)
+        
+    # Preserve original function metadata for Django URL resolution
     wrapper.__name__ = view_func.__name__
     wrapper.__doc__ = view_func.__doc__
     return wrapper
@@ -20,14 +33,22 @@ def assistant_required(view_func):
 @assistant_required
 def patient_search(request):
     """
-    JSON endpoint for live patient search.
-    Searches by first name, last name, email, or phone.
-    Returns max 10 results.
+    GET JSON endpoint for live patient search in UI dropdowns.
+    
+    Searches the database across multiple fields (first name, last name, email, phone)
+    using case-insensitive matching (`icontains`).
+    
+    Args:
+        request: HTTP GET request containing a 'q' query parameter.
+        
+    Returns:
+        JsonResponse: A list of up to 10 serialized patient dictionaries.
     """
     query = request.GET.get('q', '').strip()
     if len(query) < 2:
         return JsonResponse([], safe=False)
     
+    # Use Django Q objects for complex OR querying
     patients = Patient.objects.filter(
         Q(user__first_name__icontains=query) |
         Q(user__last_name__icontains=query) |
@@ -54,9 +75,20 @@ def patient_search(request):
 @require_POST
 def create_patient(request):
     """
-    Create a new patient account from the assistant dashboard.
-    User is created as inactive with a random password.
-    Verification email is sent so patient can activate and set password.
+    POST API to rapidly create a new Patient account from the front-desk UI.
+    
+    Workflow:
+    1. Validates form data (name, email, phone, etc.).
+    2. Ensures the email is unique across the entire user base.
+    3. Provisions a new `auth.User` and links it to a new `Patient` profile.
+    4. By default, the account is marked `is_active=False` and given a secure 
+       randomized password.
+    5. Dispatches an email verification link so the patient can self-activate 
+       their account and set their permanent password.
+       
+    Returns:
+        JsonResponse: Success flag along with the new patient's serialized data,
+        or a list of validation errors.
     """
     import secrets
     import string
@@ -69,7 +101,7 @@ def create_patient(request):
     gender = request.POST.get('gender', 'O').strip()
     address = request.POST.get('address', '').strip()
 
-    # Validation
+    # Data Validation
     errors = []
     if not first_name:
         errors.append('El nombre es requerido.')
@@ -82,17 +114,17 @@ def create_patient(request):
     if errors:
         return JsonResponse({'success': False, 'errors': errors}, status=400)
 
-    # Check for duplicate email
+    # Check for duplicate email across the system
     if User.objects.filter(email=email).exists():
         return JsonResponse({
             'success': False,
             'errors': ['Ya existe un usuario con este correo electrónico.']
         }, status=400)
 
-    # Generate random password (patient will set their own after verification)
+    # Generate an unguessable placeholder password
     random_password = ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(16))
 
-    # Create user
+    # Provision base user identity
     user = User.objects.create_user(
         username=email,
         email=email,
@@ -100,14 +132,14 @@ def create_patient(request):
         first_name=first_name,
         last_name=last_name,
     )
-    user.is_active = False
+    user.is_active = False # Account locked until email verification
     user.save()
 
-    # Add to Patients group
+    # Assign Django security role
     group, _ = Group.objects.get_or_create(name='Patients')
     user.groups.add(group)
 
-    # Create patient profile
+    # Provision Patient profile data
     patient = Patient.objects.create(
         user=user,
         address=address,
@@ -115,12 +147,12 @@ def create_patient(request):
         gender=gender,
     )
 
-    # Send verification email
+    # Dispatch welcome & verification email
     from core.email_service import send_verification_email
     try:
         send_verification_email(user, request)
     except Exception:
-        pass  # Don't fail the creation if email fails
+        pass  # We catch email failures silently to not halt the UI response
 
     return JsonResponse({
         'success': True,
@@ -139,9 +171,24 @@ def create_patient(request):
 @require_POST
 def verify_doctor(request):
     """
-    Approve or deny an associate doctor account.
-    If approved, activates account and sends welcome email.
-    If denied, deletes account and sends rejection email.
+    POST API to approve or deny an Associate Doctor's registration application.
+    
+    When an external physician registers, their account is inactive until front-desk 
+    staff formally verify their medical license credentials.
+    
+    Workflow if Approved:
+      - Activates the `AssociateDoctor` boolean flag and the underlying Django User.
+      - Dispatches a WebSocket notification to UI grids.
+      - Sends an approval confirmation email to the doctor.
+      
+    Workflow if Denied:
+      - Caches the doctor's details in RAM.
+      - Hard deletes the `AssociateDoctor` profile and underlying `User` from the DB.
+      - Sends a rejection explanation email to the doctor.
+      
+    Returns:
+        JsonResponse: Success flag and message. Handles 400 for bad actions 
+        and 404 for invalid doctor IDs.
     """
     from associateDoctorDashboard.models import AssociateDoctor
     from core.notifications import notify_doctor_approved, notify_doctor_denied
@@ -150,9 +197,11 @@ def verify_doctor(request):
     doctor_id = request.POST.get('doctor_id')
     action = request.POST.get('action')
 
+    # Validate action intent
     if action not in ['approve', 'deny']:
         return JsonResponse({'success': False, 'error': 'Acción inválida.'}, status=400)
 
+    # Fetch targeted entity safely
     try:
         doctor = AssociateDoctor.objects.get(pk=doctor_id)
         user = doctor.user
@@ -166,27 +215,26 @@ def verify_doctor(request):
         user.is_active = True
         user.save()
 
-        # Send WS notification and email
+        # Alert the ecosystem asynchronously
         notify_doctor_approved(doctor)
         try:
             send_doctor_approved_email(user)
         except Exception as e:
-            # We don't want a failed email to break the approval flow
-            pass
+            pass # Fail gracefully 
 
         return JsonResponse({'success': True, 'message': 'Doctor aprobado exitosamente.'})
 
     elif action == 'deny':
-        # Store data for email/WS before deleting
+        # Store necessary data in memory before deletion to fuel the notification engines
         doctor_pk = doctor.pk
         doctor_email = user.email
         doctor_name = f"{user.first_name} {user.last_name}"
 
-        # Delete associate doctor profile and the underlying user
+        # Hard destruction of credentials
         doctor.delete()
         user.delete()
 
-        # Send WS notification and email
+        # Alert the ecosystem asynchronously
         notify_doctor_denied(doctor_pk)
         try:
             send_doctor_denied_email(doctor_email, doctor_name)

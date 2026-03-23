@@ -1,4 +1,4 @@
-# Manual de Usuario: Médico Asociado 🩺
+# Manual de Usuario: Médico Asociado
 
 Bienvenido a RadiographXpress. Como Médico Asociado (o Médico Referente), este portal te permite recibir y consultar de forma segura y en tiempo real los resultados de imagenología de tus pacientes vinculados.
 
@@ -11,7 +11,7 @@ Bienvenido a RadiographXpress. Como Médico Asociado (o Médico Referente), este
    - Especialidad.
    - Datos de contacto y currículum básico (Universidad, etc.).
 3. **Validación:** Recibirás un correo electrónico de confirmación de email.
-4. **🔴 Importante:** Tu cuenta no será activa inmediatamente. Un **Asistente** o el personal administrativo central debe verificar tus credenciales y cédula profesional antes de aprobar tu ingreso al portal. Te llegará una notificación cuando tu cuenta haya sido aprobada.
+4. **Importante:** Tu cuenta no será activa inmediatamente. Un **Asistente** o el personal administrativo central debe verificar tus credenciales y cédula profesional antes de aprobar tu ingreso al portal. Te llegará una notificación cuando tu cuenta haya sido aprobada.
 
 ---
 

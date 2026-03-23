@@ -1,4 +1,4 @@
-# Manual de Usuario: Médico de Interpretación (Radiólogo) 🖥️🦴
+# Manual de Usuario: Médico de Interpretación (Radiólogo)
 
 ¡Bienvenido! Este es tu portal principal de operaciones de diagnóstico en RadiographXpress. Como Médico Reportador, aquí dictaminarás, clasificarás y enviarás los resultados a nuestros pacientes y médicos tratantes a través de un sistema de PACS automatizado.
 

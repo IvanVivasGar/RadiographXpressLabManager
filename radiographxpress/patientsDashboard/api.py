@@ -1,3 +1,8 @@
+"""
+API Endpoints for the Patients Dashboard.
+Provides AJAX handlers allowing a Patient to search the system directory for 
+registered Associate Doctors and dynamically grant or revoke their consent to view records.
+"""
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
@@ -6,7 +11,10 @@ from associateDoctorDashboard.models import AssociateDoctor
 
 
 def patient_required(view_func):
-    """Decorator that ensures the user is in the 'Patients' group."""
+    """
+    Security Decorator that restricts the API endpoint exclusively to members
+    of the 'Patients' Django Group.
+    """
     def wrapper(request, *args, **kwargs):
         if not request.user.groups.filter(name='Patients').exists():
             return JsonResponse({'success': False, 'error': 'No autorizado.'}, status=403)
@@ -20,9 +28,13 @@ def patient_required(view_func):
 @patient_required
 def doctor_search(request):
     """
-    JSON endpoint for live associate doctor search.
-    Searches by first name, last name.
-    Returns max 10 results.
+    GET JSON endpoint for live Associate Doctor search.
+    Searches by doctor's first or last name using case-insensitive partial matching.
+    Crucially, automatically excludes doctors who have ALREADY been granted access 
+    by this patient to prevent duplicate UI entries.
+    
+    Returns:
+        JsonResponse: A list of up to 10 serialized doctor dictionaries.
     """
     query = request.GET.get('q', '').strip()
     if len(query) < 2:
@@ -57,8 +69,15 @@ def doctor_search(request):
 @require_POST
 def toggle_doctor(request):
     """
-    Grant or revoke access for an associate doctor.
-    Expects POST with: doctor_id, action ('grant' or 'revoke')
+    POST API to modify the Patient's privacy sharing preferences.
+    Grants or revokes access to clinical records for a specifically targeted Associate Doctor.
+    
+    Expects POST Body:
+        - doctor_id (int): Primary key of the AssociateDoctor.
+        - action (str): Either 'grant' or 'revoke'.
+        
+    Returns:
+        JsonResponse: Success flag representing the applied change.
     """
     doctor_id = request.POST.get('doctor_id')
     action = request.POST.get('action')

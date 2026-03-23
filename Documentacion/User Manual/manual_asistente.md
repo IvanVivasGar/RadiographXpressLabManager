@@ -1,4 +1,4 @@
-# Manual de Usuario: Asistente / Administrativo 📋💼
+# Manual de Usuario: Asistente / Administrativo
 
 Bienvenido al Módulo Administrativo de RadiographXpress. Como asistente del sistema, eres primordial en el orden de los accesos y de la carga inicial de los pacientes antes de la entrada al RIS/PACS.
 

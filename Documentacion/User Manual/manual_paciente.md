@@ -1,4 +1,4 @@
-# Manual de Usuario: Paciente 🧑‍⚕️🏥
+# Manual de Usuario: Paciente
 
 ¡Bienvenido a RadiographXpress! Este manual te guiará paso a paso para utilizar todas las funciones disponibles en tu portal de paciente, desde visualizar tus reportes médicos hasta conceder acceso a tus médicos particulares.
 

@@ -1,104 +1,104 @@
-# Documentación de Contenerización — RadiographXpress
+# Containerization Documentation — RadiographXpress
 
-## Resumen Ejecutivo
+## Executive Summary
 
-El sistema RadiographXpress ha sido exitosamente contenerizado utilizando Docker y Docker Compose para habilitar un despliegue escalable, consistente y listo para producción. Se migró la arquitectura de un entorno de desarrollo local (con SQLite y Channel Layers en memoria) a una arquitectura multi-servicio con PostgreSQL y Redis.
+The RadiographXpress system has been successfully containerized using Docker and Docker Compose to enable a scalable, consistent, and production-ready deployment. The architecture was migrated from a local development environment (with SQLite and in-memory Channel Layers) to a multi-service architecture with PostgreSQL and Redis.
 
-El proceso de contenerización y automatización de infraestructura dio como resultado un entorno completamente funcional, con el 100% de las pruebas automatizadas (84/84) pasando exitosamente dentro del entorno contenerizado.
+The containerization and infrastructure automation process resulted in a fully functional environment, with 100% of the automated tests (84/84) passing successfully within the containerized environment.
 
 ---
 
-## Arquitectura del Contenedor
+## Container Architecture
 
-La aplicación está diseñada bajo una arquitectura de microservicios usando `docker-compose.yml`, orquestando 5 contenedores principales que interactúan entre sí dentro de una red de Docker (`radiographxpress_default`).
+The application is designed under a microservices architecture using `docker-compose.yml`, orchestrating 5 main containers interacting with each other within a Docker network (`radiographxpress_default`).
 
-### Servicios Implementados
+### Deployed Services
 
 1. **`web` (Django/Daphne):**
-   - Servidor ASGI (Daphne) encargado de procesar solicitudes HTTP y conexiones WebSocket.
-   - Ejecuta el código principal de la aplicación en el puerto `8000`.
-   - Espera a que la base de datos PostgreSQL se reporte como "saludable" (healthy) antes de iniciar, gracias al script inteligente `entrypoint.sh`.
+   - ASGI server (Daphne) in charge of processing HTTP requests and WebSocket connections.
+   - Runs the main application code on port `8000`.
+   - Waits for the PostgreSQL database to report as "healthy" before starting, thanks to the intelligent `entrypoint.sh` script.
 
-2. **`nginx` (Proxy Inverso):**
-   - Servidor web ligero (Nginx Alpine) en el puerto `80`.
-   - Actúa como proxy inverso: redirige tráfico HTTP y de WebSockets (`/ws/`) hacia el contenedor `web`.
-   - Sirve archivos estáticos directamente para mejorar el rendimiento.
-   - Restringe el cuerpo de peticiones a `10MB` para mitigar ataques DOS por carga de archivos masivos.
+2. **`nginx` (Reverse Proxy):**
+   - Lightweight web server (Nginx Alpine) on port `80`.
+   - Acts as a reverse proxy: redirects HTTP and WebSocket traffic (`/ws/`) to the `web` container.
+   - Serves static files directly to improve performance.
+   - Restricts the request body size to `10MB` to mitigate DOS attacks from massive file uploads.
 
-3. **`postgres` (Base de Datos):**
-   - Imagen oficial `postgres:16-alpine`.
-   - Reemplaza a SQLite para soportar escritura concurrente y despliegue distribuido en producción.
-   - Los datos se almacenan en un volumen persistente (`postgres_data`) para prevenir pérdida de información al reiniciar contenedores.
+3. **`postgres` (Database):**
+   - Official `postgres:16-alpine` image.
+   - Replaces SQLite to support concurrent writing and distributed deployment in production.
+   - Data is stored in a persistent volume (`postgres_data`) to prevent information loss when restarting containers.
 
-4. **`redis` (Broker de Mensajes/Caché):**
-   - Imagen oficial `redis:7-alpine`.
-   - Implementado específicamente como **Channel Layer** para soportar Django Channels y las conexiones WebSocket distribuidas entre múltiples workers o instancias.
+4. **`redis` (Message Broker/Cache):**
+   - Official `redis:7-alpine` image.
+   - Implemented specifically as a **Channel Layer** to support Django Channels and distributed WebSocket connections across multiple workers or instances.
 
-5. **`sync_pacs` (Proceso de Fondo):**
-   - Utiliza la misma imagen construida para `web`, pero ejecuta el comando de administración personalizado `python manage.py sync_pacs_images`.
-   - Mantiene una sincronización constante con la API de Raditech en segundo plano, sin bloquear los hilos principales de la web.
-
----
-
-## Proceso de Implementación paso a paso
-
-### 1. Preparación del Entorno Base (Dockerfile)
-Se construyó una imagen multi-etapa basada en `python:3.13-slim` para garantizar un tamaño de contenedor óptimo. 
-- **Dependencias del Sistema:** Se identificó la necesidad de instalar dependencias a nivel de SO como `libpango`, `libcairo`, `fonts-dejavu-core` para que **WeasyPrint** (generador de PDF de los reportes) funcione correctamente. También se agregó `libpq5` para interactuar con Postgres y `libqpdf-dev` para `pikepdf`.
-- **Archivos Estáticos:** La recolección de estáticos (`collectstatic`) se ejecuta **durante el build** del contenedor, reduciendo el tiempo de inicialización. Con esto se recolectaron **145 archivos estáticos**.
-
-### 2. Actualización de Dependencias de Python (`requirements.txt`)
-Se añadieron librerías indispensables para la infraestructura de producción:
-- `psycopg[binary]==3.3.3`: Driver moderno para conectar Django a PostgreSQL.
-- `channels-redis==4.3.0`: Habilita el Channel Layer con Redis.
-- `whitenoise==6.12.0`: Sirve archivos estáticos directamente desde Django de manera altamente optimizada.
-
-### 3. Modificaciones Críticas al Código (`settings.py`)
-Para que el código fuera agnóstico al entorno, se configuraron reglas condicionadas:
-- **Detección de Base de Datos:** `settings.py` detecta si se ha establecido una variable `DATABASE_URL`. Si existe (como en el contenedor), se conecta a Postgres. De lo contrario, cae en gracia a SQLite para desarrollo local.
-- **Configuración WebSockets:** De forma similar, se implementó `REDIS_URL` para alternar entre `RedisChannelLayer` y `InMemoryChannelLayer`.
-- **Proxy Seguro:** Se configuró `SECURE_PROXY_SSL_HEADER` para confiar en las cabeceras `X-Forwarded-Proto` de Nginx.
-
-### 4. Automatización del Inicio (`entrypoint.sh`)
-Se diseñó un script de Bash especializado para inicializar el contenedor web asegurando que:
-1. PostgreSQL está disponible aceptando conexiones (comprueba mediante un test script en Python).
-2. Se ejecutan todas las migraciones estructuradas pendientes (`python manage.py migrate --noinput`).
-3. El proceso cambia la ejecución a `daphne` asignándole el "PID 1", de forma que el contenedor maneja las interrupciones del sistema operativo correctamente.
+5. **`sync_pacs` (Background Process):**
+   - Uses the exact same image built for `web`, but runs the custom management command `python manage.py sync_pacs_images`.
+   - Maintains constant synchronization with the Raditech API in the background, without blocking the main web threads.
 
 ---
 
-## Resultados y Verificación
+## Step-by-Step Implementation Process
 
-El entorno fue sometido a prueba exhaustiva con los siguientes resultados:
+### 1. Base Environment Preparation (Dockerfile)
+A multi-stage image based on `python:3.13-slim` was built to guarantee an optimal container size.
+- **System Dependencies:** The need to install OS-level dependencies such as `libpango`, `libcairo`, `fonts-dejavu-core` was identified for **WeasyPrint** (PDF report generator) to function correctly. `libpq5` was also added to interact with Postgres, and `libqpdf-dev` for `pikepdf`.
+- **Static Files:** Static file collection (`collectstatic`) runs **during the container build**, reducing initialization time. With this, **145 static files** were collected.
 
-1. **Estado de Servicios:** Todos los contenedores inicializaron en verde (Healthy status para Postgres).
-2. **Validación de UI:** La aplicación levantó a la primera en `http://localhost`. La interfaz gráfica, hojas de estilos estáticos, y vistas de formulario de acceso se renderizan perfectamente.
-3. **Migraciones:** Todas las estructuras de base de datos fueron trasladadas a Postgres exitosamente vía automatización del entrypoint.
-4. **Resiliencia.** Pruebas Automatizadas de Unidad: La suite completa con las **84 pruebas**, las cuales verifican seguridad (inyecciones, CSRF), roles de usuarios (IDOR) y lógica de sincronización, **se ejecutaron localmente con 0 Fallos y 0 Errores** demostrando que los cambios en settings son retro-compatibles y listos para producción.
+### 2. Python Dependencies Update (`requirements.txt`)
+Essential libraries for the production infrastructure were added:
+- `psycopg[binary]==3.3.3`: Modern driver to connect Django to PostgreSQL.
+- `channels-redis==4.3.0`: Enables the Redis Channel Layer.
+- `whitenoise==6.12.0`: Serves static files directly from Django in a highly optimized manner.
 
-### Comandos de Operación Rápida
-Ejemplo de administración del motor contenerizado:
+### 3. Critical Code Modifications (`settings.py`)
+To make the code environment-agnostic, conditional rules were configured:
+- **Database Detection:** `settings.py` detects if a `DATABASE_URL` variable has been set. If it exists (like in the container), it connects to Postgres. Otherwise, it defaults to SQLite for local development.
+- **WebSockets Configuration:** Similarly, `REDIS_URL` was implemented to toggle between `RedisChannelLayer` and `InMemoryChannelLayer`.
+- **Secure Proxy:** `SECURE_PROXY_SSL_HEADER` was configured to trust Nginx's `X-Forwarded-Proto` headers.
 
-- **Arrancar entorno productivo (Segundo plano):**
+### 4. Startup Automation (`entrypoint.sh`)
+A specialized Bash script was designed to initialize the web container ensuring that:
+1. PostgreSQL is available and accepting connections (verified using a Python test script).
+2. All pending structured migrations are executed (`python manage.py migrate --noinput`).
+3. The process execution shifts to `daphne` by assigning it "PID 1", so the container handles OS interrupts correctly.
+
+---
+
+## Results and Verification
+
+The environment was subjected to exhaustive testing with the following results:
+
+1. **Service Status:** All containers initialized green (Healthy status for Postgres).
+2. **UI Validation:** The application loaded successfully on the first try at `http://localhost`. The graphical interface, static stylesheets, and login form views render perfectly.
+3. **Migrations:** All database structures were successfully transferred to Postgres via the entrypoint automation.
+4. **Resilience & Automated Unit Tests:** The complete test suite with all **84 tests**—verifying security (injections, CSRF), user roles (IDOR), and synchronization logic—was executed locally with **0 Failures and 0 Errors**, demonstrating that the settings modifications are backwards-compatible and production-ready.
+
+### Quick Operation Commands
+Examples for managing the containerized engine:
+
+- **Start production environment (Background):**
   ```bash
   docker compose up -d
   ```
 
-- **Revisar estado o consolas:**
+- **Check status or logs:**
   ```bash
   docker compose ps
   docker compose logs -f web
   ```
 
-- **Ejecutar pruebas del sistema dentro de Docker:**
+- **Run system tests inside Docker:**
   ```bash
   docker compose exec web python manage.py test --verbosity=2
   ```
 
-- **Apagar y destruir contenedores y red:**
+- **Stop and destroy containers and network:**
   ```bash
   docker compose down
   ```
 
-## Conclusión
-La aplicación ahora empaqueta todas sus dependencias tanto a nivel de código (`pip`) como a nivel de SO (`apt-get`) asegurando portabilidad al 100%. Las limitaciones de base de datos y Websockets uniproceso han sido suplantadas por arquitecturas estándar de la industria preparadas para la alta demanda y un despliegue directo en infraestructuras Cloud como **AWS EC2 / ECS**.
+## Conclusion
+The application now bundles all its dependencies both at the code level (`pip`) and OS level (`apt-get`), ensuring 100% portability. The single-process websocket and database limitations have been replaced by industry-standard architectures prepared for high demand and direct deployment in Cloud infrastructures such as **AWS EC2 / ECS**.

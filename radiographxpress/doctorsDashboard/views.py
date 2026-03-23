@@ -1,3 +1,8 @@
+"""
+Views for the Doctors Dashboard.
+Handles the diagnostic workflow for Reporting Radiologists, including viewing 
+pending studies, locking studies for analysis, and submitting finalized medical reports.
+"""
 from django.shortcuts import render, redirect, get_object_or_404
 from core.models import Study, Report
 from .models import ReportingDoctor
@@ -14,29 +19,35 @@ from django.contrib.auth.decorators import login_required
 
 class PendingStudiesView(DoctorRequiredMixin, ListView):
     """
-    Displays the grid of studies waiting for analysis.
-    Corresponds to the 'Estudios Pendientes' image.
+    Displays the grid of studies waiting for radiological analysis.
+    Corresponds to the 'Estudios Pendientes' page.
     """
     model = Study
     template_name = 'doctorsDashboard/pending_studies.html'
     context_object_name = 'studies'
 
     def get_queryset(self):
-        # Filter for studies that are pending.
-        # "Pending" now means: No report associated with it.
-        # If a report exists, it's either In Progress (locked) or Completed.
+        """
+        Filter for studies that are pending.
+        A study is defined as "Pending" if it has NO medical report associated with it yet.
+        Locked (In Progress) and Completed studies are filtered out here.
+        """
         return Study.objects.filter(id_report__isnull=True).order_by('date')
 
 class StudiesInProgressView(DoctorRequiredMixin, ListView):
     """
-    Displays studies locked by the current doctor.
+    Displays studies that are currently 'locked' by the authenticated doctor.
+    A study is locked to prevent concurrent, overlapping reporting by multiple radiologists.
     """
     model = Study
     template_name = 'doctorsDashboard/studies_in_progress.html'
     context_object_name = 'studies'
     
     def get_queryset(self):
-        # Show studies where the report is IN_PROGRESS and handled by THIS doctor
+        """
+        Filter to show ONLY studies where the report is marked IN_PROGRESS 
+        and is explicitly assigned to *THIS* specific logged-in doctor.
+        """
         try:
             if hasattr(self.request.user, 'reporting_doctor_profile'):
                 doctor = self.request.user.reporting_doctor_profile
@@ -51,16 +62,19 @@ class StudiesInProgressView(DoctorRequiredMixin, ListView):
 
 class DoctorProfileView(DoctorRequiredMixin, DetailView):
     """
-    Shows the doctor's profile and their history of completed studies.
+    Shows a read-only view of the radiologist's profile, credentials, 
+    and a historical log of their completed reports.
     """
     model = ReportingDoctor
     template_name = 'doctorsDashboard/doctor_profile.html'
     context_object_name = 'doctor'
 
     def get_context_data(self, **kwargs):
+        """
+        Injects purely historical, completed studies authored 
+        by this specific doctor into the template context.
+        """
         context = super().get_context_data(**kwargs)
-        # Assuming we can filter reports by this doctor
-        # Note: You might need to adjust the filter based on how Study links to Report/Doctor in your DB logic
         context['history_studies'] = Study.objects.filter(
             id_report__doctor_in_charge=self.object
         ).order_by('-date')
@@ -68,27 +82,40 @@ class DoctorProfileView(DoctorRequiredMixin, DetailView):
 
 class StudyReportCreateView(DoctorRequiredMixin, CreateView):
     """
-    The main workspace for the doctor to view the X-ray and write the report.
-    Corresponds to the 'Generar Reporte' split-screen image.
+    The main diagnostic workspace where a doctor interprets DICOM images 
+    and writes the final text Report. Features a split-screen UI.
     """
     model = Report
     template_name = 'doctorsDashboard/study_report.html'
     fields = ['about', 'findings', 'conclusions', 'recommendations', 'patients_description']
     
     def dispatch(self, request, *args, **kwargs):
-        # We need the study ID to know what we are reporting on
+        """
+        Pre-fetch the target Study based on the URL parameter before form initialization.
+        """
         self.study = get_object_or_404(Study, pk=self.kwargs['pk'])
         return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
+        """
+        Provides the study object (which contains the `pacs_url` link) to the UI.
+        """
         context = super().get_context_data(**kwargs)
-        # Pass the study to the template to display the X-ray (pacs_url)
         context['study'] = self.study
         return context
 
     def form_valid(self, form):
+        """
+        Executes the business logic for finalizing a study report.
+        Sequence:
+          1. Link the authoring doctor.
+          2. Mark the report status as COMPLETED.
+          3. Save the report to DB.
+          4. Link the new report back to the parent Study.
+          5. Dispatch Email alerts to the Patient.
+          6. Broadcast WebSocket notifications across dashboards.
+        """
         # 1. Assign the logged-in doctor
-        # We assume the logged-in Django User is linked to a ReportingDoctor
         try:
             if hasattr(self.request.user, 'reporting_doctor_profile'):
                 reporting_doctor = self.request.user.reporting_doctor_profile
@@ -96,7 +123,6 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
             else:
                  raise ValueError(f"No ReportingDoctor profile linked to user {self.request.user.username}")
         except Exception: 
-            # Should be caught by hasattr check theoretically, but for safety
             raise ValueError(f"Error accessing profile for user {self.request.user.username}")
         
         # 2. Update status to COMPLETED
@@ -105,11 +131,11 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
         # 3. Save the report
         self.object = form.save()
 
-        # 5. Link the new report to the Study
+        # 4. Link the new report to the Study
         self.study.id_report = self.object
         self.study.save()
 
-        # 6. Notify the patient via email
+        # 5. Notify the patient via email
         if not self.study.email_sent:
             try:
                 from core.email_service import send_study_completed_email
@@ -119,22 +145,25 @@ class StudyReportCreateView(DoctorRequiredMixin, CreateView):
             except Exception as e:
                 print(f"Error sending study completion email: {e}")
 
-        # 7. Notify via WebSocket
+        # 6. Notify via WebSocket
         from core.notifications import notify_report_completed
         notify_report_completed(self.object, self.study)
 
         return super().form_valid(form)
 
     def get_success_url(self):
-        # Redirect back to the pending list after finishing
+        """Return the user back to the pending studies grid after submission."""
         return reverse_lazy('pendingStudies')
 
 @require_POST
 @login_required
 def lock_study(request, study_id):
     """
-    API to lock a study for the current doctor.
-    Creates an empty Report with status IN_PROGRESS.
+    POST API to atomically lock a study for the requesting doctor.
+    Creates an empty, placeholder Report with an IN_PROGRESS status to prevent
+    other doctors from seeing it on the pending board.
+    
+    Broadcasts a WebSocket message telling all active clients to live-hide the study.
     """
     try:
         study = Study.objects.get(pk=study_id)
@@ -144,7 +173,7 @@ def lock_study(request, study_id):
              
         doctor = request.user.reporting_doctor_profile
         
-        # Check if already locked
+        # Check if already locked globally
         if study.id_report and study.id_report.status == Report.IN_PROGRESS:
             if study.id_report.doctor_in_charge != doctor:
                  return JsonResponse({'status': 'error', 'message': 'Study already locked by another doctor'}, status=403)
@@ -166,7 +195,7 @@ def lock_study(request, study_id):
         study.id_report = report
         study.save()
 
-        # Notify all doctors via WebSocket
+        # Notify all doctors via WebSocket to remove it from their grids
         from core.notifications import notify_report_locked
         notify_report_locked(study, doctor)
         
@@ -179,12 +208,15 @@ def lock_study(request, study_id):
 
 def doctor_logout(request):
     """
-    Cleans up any "In Progress" reports for the current doctor before logging out.
-    This ensures locked studies are returned to the pool.
+    Custom logout handler tailored specifically for Reporting Radiologists.
+    Crucially, it acts as a cleanup daemon, searching the DB for any "In Progress" reports 
+    locked by this specific doctor and unconditionally aborts them, returning 
+    the studies to the public pending pool. 
+    
+    This ensures uncompleted studies don't become permanently orphaned if a doctor drops offline.
     """
     if request.user.is_authenticated:
         try:
-            # We use the relation to get the profile
             if hasattr(request.user, 'reporting_doctor_profile'):
                 doctor = request.user.reporting_doctor_profile
                 
@@ -227,7 +259,9 @@ def doctor_logout(request):
 @login_required
 def my_profile(request):
     """
-    Redirects to the profile of the currently logged-in doctor.
+    Convenience view that safely routes the authenticated user directly to 
+    their assigned DoctorProfileView, creating an empty stub profile 
+    if one was mysteriously missing from an admin's incomplete creation process.
     """
     try:
         # Check if the user has a profile
@@ -237,6 +271,7 @@ def my_profile(request):
         
         # If user is in Doctors group but has no profile, create one
         elif request.user.groups.filter(name='Doctors').exists():
+            # DO NOT TRANSLATE UI STRINGS
             doctor = ReportingDoctor.objects.create(
                 user=request.user,
                 address="Actualizar Dirección",

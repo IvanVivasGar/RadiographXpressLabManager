@@ -1,8 +1,15 @@
+"""
+Core Custom Authentication Mixins.
+Leveraged by Django Class-Based Views to strictly enforce Role-Based Access Control (RBAC) 
+and securely inject authenticated user profiles directly into the rendering template context.
+"""
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 class DoctorRequiredMixin(UserPassesTestMixin):
     """
-    Ensures the user is a member of the 'Doctors' group.
+    Enforces authorization allowing ONLY internal Reporting Radiologists
+    who belong to the 'Doctors' Django auth group to utilize the View.
+    Injects the `reporting_doctor` profile into the HTML context.
     """
     def test_func(self):
         return self.request.user.groups.filter(name='Doctors').exists()
@@ -15,7 +22,9 @@ class DoctorRequiredMixin(UserPassesTestMixin):
 
 class PatientRequiredMixin(UserPassesTestMixin):
     """
-    Ensures the user is a member of the 'Patients' group.
+    Enforces authorization allowing ONLY registered Patients
+    who belong to the 'Patients' Django auth group to utilize the View.
+    Injects the `patient` profile into the HTML context.
     """
     def test_func(self):
         return self.request.user.groups.filter(name='Patients').exists()
@@ -28,7 +37,9 @@ class PatientRequiredMixin(UserPassesTestMixin):
 
 class AssociatedDoctorRequiredMixin(UserPassesTestMixin):
     """
-    Ensures the user is a member of the 'AssociatedDoctors' group.
+    Enforces authorization allowing ONLY referring Associate Doctors
+    who belong to the 'AssociatedDoctors' Django auth group to utilize the View.
+    Injects the `associated_doctor` profile into the HTML context.
     """
     def test_func(self):
         return self.request.user.groups.filter(name='AssociatedDoctors').exists()
@@ -41,7 +52,9 @@ class AssociatedDoctorRequiredMixin(UserPassesTestMixin):
 
 class AssistantRequiredMixin(UserPassesTestMixin):
     """
-    Ensures the user is a member of the 'Assistants' group.
+    Enforces authorization allowing ONLY administrative front-desk staff
+    who belong to the 'Assistants' Django auth group to utilize the View.
+    Injects the `assistant` profile into the HTML context.
     """
     def test_func(self):
         return self.request.user.groups.filter(name='Assistants').exists()

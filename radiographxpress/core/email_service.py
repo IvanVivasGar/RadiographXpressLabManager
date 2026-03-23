@@ -1,22 +1,34 @@
+"""
+Platform-wide Email Dispatch Service.
+Handles compiling HTML templates into emails, generating verification tokens,
+and attaching heavily encrypted diagnostic PDF reports.
+"""
 from django.core.mail import send_mail
 from django.core.signing import TimestampSigner, BadSignature, SignatureExpired
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
 
-
+# Global cryptographic signer for short-lived URL tokens
 signer = TimestampSigner()
 
-
 def _make_verification_token(user):
-    """Create a signed token containing the user's pk."""
+    """
+    Creates a cryptographically signed, timestamped token containing the user's primary key.
+    Cannot be forged without the server's SECRET_KEY.
+    """
     return signer.sign(str(user.pk))
-
 
 def _verify_token(token, max_age=86400):
     """
-    Validate a signed token and return the user pk.
-    Default max_age is 24 hours (86400 seconds).
+    Validates a signed token to ensure it hasn't expired and hasn't been tampered with.
+    
+    Args:
+        token (str): The raw signed string passed from the URL.
+        max_age (int, optional): Expiration window in seconds. Default is 24 hours.
+        
+    Returns:
+        int or None: The successfully decoded user PK, or None if invalid/expired.
     """
     try:
         value = signer.unsign(token, max_age=max_age)
@@ -24,14 +36,17 @@ def _verify_token(token, max_age=86400):
     except (BadSignature, SignatureExpired):
         return None
 
-
 def send_verification_email(user, request):
-    """Send an email verification link to the user."""
+    """
+    Compiles and dispatches an Account Verification email containing 
+    the secure activation URL token.
+    """
     token = _make_verification_token(user)
     
     # Build absolute verification URL
     verify_url = request.build_absolute_uri(f'/core/verify-email/{token}/')
     
+    # DO NOT TRANSLATE UI/EMAIL STRINGS
     subject = 'Verifica tu correo — Radiograph Xpress'
     html_message = render_to_string('core/emails/verification_email.html', {
         'user': user,
@@ -48,9 +63,12 @@ def send_verification_email(user, request):
         fail_silently=False,
     )
 
-
 def send_welcome_email(user):
-    """Send a branded welcome email after verification."""
+    """
+    Compiles and dispatches a branded Welcome email to the user 
+    triggering immediately after successful email verification.
+    """
+    # DO NOT TRANSLATE UI/EMAIL STRINGS
     subject = '¡Bienvenido a Radiograph Xpress!'
     html_message = render_to_string('core/emails/welcome_email.html', {
         'user': user,
@@ -66,9 +84,15 @@ def send_welcome_email(user):
         fail_silently=False,
     )
 
-
 def send_study_completed_email(study):
-    """Notify the patient that their study report is ready, with encrypted PDF attached."""
+    """
+    Notifies a Patient that their final medical report has been released.
+    
+    Crucially, it generates the PDF byte-stream behind the scenes, heavily 
+    encrypts the PDF using AES-256 with the patient's unique 18-character 
+    digital password (found on their physical ticket), and attaches 
+    it to the email. This ensures strict HIPAA/GDPR data security.
+    """
     from django.core.mail import EmailMessage
     import pikepdf
     import io
@@ -82,6 +106,7 @@ def send_study_completed_email(study):
     if not report:
         return
     
+    # DO NOT TRANSLATE UI/EMAIL STRINGS
     subject = 'Tu estudio está listo — Radiograph Xpress'
     html_message = render_to_string('core/emails/study_completed_email.html', {
         'patient': patient,
@@ -116,7 +141,7 @@ def send_study_completed_email(study):
                     owner=password,
                     user=password,
                     aes=True,
-                    R=6,  # AES-256
+                    R=6,  # AES-256 Strong Cryptography
                 )
             )
         
@@ -128,13 +153,16 @@ def send_study_completed_email(study):
         )
     except Exception as e:
         print(f"Error generating/encrypting PDF for email: {e}")
-        # Still send the email without attachment
+        # Still send the email without attachment as a fallback
     
     email.send(fail_silently=False)
 
-
 def send_doctor_approved_email(user):
-    """Send an email notifying the associate doctor that their account was approved."""
+    """
+    Notifies an Associate Doctor that their registration was manually 
+    approved by a staff Assistant and their account is now active.
+    """
+    # DO NOT TRANSLATE UI/EMAIL STRINGS
     subject = '¡Tu cuenta ha sido aprobada! — Radiograph Xpress'
     html_message = render_to_string('core/emails/doctor_approved_email.html', {
         'user': user,
@@ -150,9 +178,12 @@ def send_doctor_approved_email(user):
         fail_silently=False,
     )
 
-
 def send_doctor_denied_email(email, name):
-    """Send an email notifying the associate doctor that their account was not approved."""
+    """
+    Notifies a rejected Associate Doctor applicant that their medical 
+    credentials could not be verified and their account has been removed.
+    """
+    # DO NOT TRANSLATE UI/EMAIL STRINGS
     subject = 'Solicitud de cuenta — Radiograph Xpress'
     html_message = render_to_string('core/emails/doctor_denied_email.html', {
         'name': name,
