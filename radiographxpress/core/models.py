@@ -5,9 +5,11 @@ from datetime import datetime
 
 class Study(models.Model):
     id_study = models.AutoField(primary_key=True)
-    pacs_url = models.CharField(max_length=100)
+    pacs_url = models.CharField(max_length=500, blank=True, default='')
     email_sent = models.BooleanField(default=False)
     date = models.DateField()
+    raditech_visit_id = models.CharField(max_length=100, null=True, blank=True)
+    accession_number = models.CharField(max_length=100, null=True, blank=True)
     id_study_request = models.ForeignKey('assistantDashboard.StudyRequest', on_delete=models.CASCADE)
     id_report = models.ForeignKey('Report', on_delete=models.CASCADE, null=True, blank=True)
     id_patient = models.ForeignKey('patientsDashboard.Patient', on_delete=models.CASCADE)

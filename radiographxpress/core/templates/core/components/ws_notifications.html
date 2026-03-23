@@ -144,6 +144,7 @@
             doctor_pending_approval: 'MD',
             doctor_approved: 'OK',
             doctor_denied: 'X',
+            images_available: '🖼️',
             info: 'ℹ️',
         };
         const CSS_CLASS = {
@@ -155,6 +156,7 @@
             doctor_pending_approval: 'ws-toast-request',
             doctor_approved: 'ws-toast-report',
             doctor_denied: 'ws-toast-locked',
+            images_available: 'ws-toast-report',
         };
 
         // ── Toast display ──
@@ -323,6 +325,17 @@
                                     }
                                 }, 400);
                             }
+                        }
+                    }
+                    break;
+
+                case 'images_available':
+                    // PACS images arrived for a study → refresh to show updated cards
+                    {
+                        const pendingEl = document.querySelector('.pending-studies-page');
+                        const studiesEl = document.querySelector('.studies-grid');
+                        if (pendingEl || studiesEl) {
+                            setTimeout(refreshPage, 1000);
                         }
                     }
                     break;

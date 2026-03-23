@@ -114,9 +114,9 @@
             <div class="doctor-signature-section">
                 <div class="signature-container">
                     <!-- Signature Image -->
-                    <!-- Using a placeholder or a 'signature' field if it existed. 
-                          Since we don't have a signature image field on profile, we'll try to use a generated one or placeholder. -->
+                    {% if study.id_report.doctor_in_charge.signature %}
                     <img src="{{ study.id_report.doctor_in_charge.signature.url }}" class="signature-image" alt="Firma del Doctor">
+                    {% endif %}
 
                     <!-- Doctor Name -->
                     <div class="doctor-name-sign">

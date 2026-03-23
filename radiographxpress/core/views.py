@@ -127,9 +127,32 @@ def login_success(request):
     # Fallback for superusers or unassigned users
     return redirect('home')
 
+@login_required
 def study_detail(request, id_study):
     study = get_object_or_404(Study, id_study=id_study)
-    hide_download_btn = request.user.is_authenticated and request.user.groups.filter(name__in=['AssociatedDoctors', 'Doctors']).exists()
+
+    # Ownership verification: restrict access based on user role
+    user = request.user
+    if user.groups.filter(name='Patients').exists():
+        # Patients can only view their own studies
+        if not hasattr(user, 'patient_profile') or study.id_patient != user.patient_profile:
+            return HttpResponse("No autorizado", status=403)
+    elif user.groups.filter(name='AssociatedDoctors').exists():
+        # Associate doctors can only view studies for their associated patients
+        if hasattr(user, 'associate_doctor_profile'):
+            doctor = user.associate_doctor_profile
+            if not doctor.patients.filter(pk=study.id_patient.pk).exists():
+                return HttpResponse("No autorizado", status=403)
+        else:
+            return HttpResponse("No autorizado", status=403)
+    elif user.groups.filter(name='Doctors').exists():
+        pass  # Reporting doctors can view all studies
+    elif user.groups.filter(name='Assistants').exists():
+        pass  # Assistants can view all studies
+    elif not user.is_staff:
+        return HttpResponse("No autorizado", status=403)
+
+    hide_download_btn = user.groups.filter(name__in=['AssociatedDoctors', 'Doctors']).exists()
     return render(request, 'core/study_report_detail.html', {'study': study, 'hide_download_btn': hide_download_btn})
 
 def logout(request):

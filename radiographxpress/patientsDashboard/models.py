@@ -20,6 +20,8 @@ class Patient(models.Model):
     phone = models.CharField(max_length=100)
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default=OTHER)
     is_email_verified = models.BooleanField(default=False)
+    raditech_patient_id = models.CharField(max_length=100, null=True, blank=True)
+    mrn = models.CharField(max_length=50, null=True, blank=True, unique=True)
     associated_doctors = models.ManyToManyField('associateDoctorDashboard.AssociateDoctor', related_name='patients')
 
     @property

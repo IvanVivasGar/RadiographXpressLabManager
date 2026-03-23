@@ -5,7 +5,19 @@ from django.views.decorators.http import require_POST
 from patientsDashboard.models import Patient
 
 
+def assistant_required(view_func):
+    """Decorator that ensures the user is in the 'Assistants' group."""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.groups.filter(name='Assistants').exists():
+            return JsonResponse({'success': False, 'error': 'No autorizado.'}, status=403)
+        return view_func(request, *args, **kwargs)
+    wrapper.__name__ = view_func.__name__
+    wrapper.__doc__ = view_func.__doc__
+    return wrapper
+
+
 @login_required
+@assistant_required
 def patient_search(request):
     """
     JSON endpoint for live patient search.
@@ -38,6 +50,7 @@ def patient_search(request):
 
 
 @login_required
+@assistant_required
 @require_POST
 def create_patient(request):
     """
@@ -122,6 +135,7 @@ def create_patient(request):
 
 
 @login_required
+@assistant_required
 @require_POST
 def verify_doctor(request):
     """
@@ -142,7 +156,7 @@ def verify_doctor(request):
     try:
         doctor = AssociateDoctor.objects.get(pk=doctor_id)
         user = doctor.user
-    except AssociateDoctor.DoesNotExist:
+    except (AssociateDoctor.DoesNotExist, ValueError, TypeError):
         return JsonResponse({'success': False, 'error': 'Doctor no encontrado.'}, status=404)
 
     if action == 'approve':

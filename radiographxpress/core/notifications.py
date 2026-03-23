@@ -161,3 +161,26 @@ def notify_doctor_denied(doctor_pk):
         'doctor_id': doctor_pk,
     }
     _send_to_group('assistant_all', 'doctor_denied', 'Doctor rechazado', data)
+
+
+def notify_images_available(study):
+    """
+    PACS images have arrived for a study that was previously pending.
+    Notify: all doctors (new study to report), the patient, and their associate doctors.
+    """
+    data = {
+        'study_id': study.id_study,
+        'patient_name': f'{study.id_patient.user.first_name} {study.id_patient.user.last_name}',
+    }
+
+    # All doctors — new study with images available
+    _send_to_group('doctors_all', 'images_available', 'Imágenes de estudio disponibles', data)
+
+    # Patient — images for your study arrived
+    patient_user_id = study.id_patient.user.id
+    _send_to_group(f'patient_{patient_user_id}', 'images_available', 'Las imágenes de tu estudio están disponibles', data)
+
+    # Associated doctors for this patient
+    for doctor in study.id_patient.associated_doctors.all():
+        _send_to_group(f'associate_{doctor.user.id}', 'images_available', 'Imágenes de estudio de paciente disponibles', data)
+

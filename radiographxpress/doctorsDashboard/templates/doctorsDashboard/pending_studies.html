@@ -26,7 +26,11 @@
             {% url 'studyReportCreate' study.pk as report_url %}
 
             {% with first=study.id_patient.first_name last=study.id_patient.last_name %}
+            {% if study.pacs_url %}
             {% include "core/components/study_card.html" with study_url=report_url pacs_url=study.pacs_url title=first|add:" "|add:last study_id=study.pk %}
+            {% else %}
+            {% include "core/components/study_card.html" with pacs_url="" title=first|add:" "|add:last study_id=study.pk blocked=True images_pending=True status="images_pending" %}
+            {% endif %}
             {% endwith %}
 
             {% empty %}

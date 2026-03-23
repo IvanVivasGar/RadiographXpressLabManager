@@ -5,7 +5,19 @@ from django.db.models import Q
 from associateDoctorDashboard.models import AssociateDoctor
 
 
+def patient_required(view_func):
+    """Decorator that ensures the user is in the 'Patients' group."""
+    def wrapper(request, *args, **kwargs):
+        if not request.user.groups.filter(name='Patients').exists():
+            return JsonResponse({'success': False, 'error': 'No autorizado.'}, status=403)
+        return view_func(request, *args, **kwargs)
+    wrapper.__name__ = view_func.__name__
+    wrapper.__doc__ = view_func.__doc__
+    return wrapper
+
+
 @login_required
+@patient_required
 def doctor_search(request):
     """
     JSON endpoint for live associate doctor search.
@@ -41,6 +53,7 @@ def doctor_search(request):
 
 
 @login_required
+@patient_required
 @require_POST
 def toggle_doctor(request):
     """
@@ -55,7 +68,7 @@ def toggle_doctor(request):
 
     try:
         doctor = AssociateDoctor.objects.get(pk=doctor_id)
-    except AssociateDoctor.DoesNotExist:
+    except (AssociateDoctor.DoesNotExist, ValueError, TypeError):
         return JsonResponse({'success': False, 'error': 'Doctor no encontrado.'}, status=404)
 
     patient = request.user.patient_profile
