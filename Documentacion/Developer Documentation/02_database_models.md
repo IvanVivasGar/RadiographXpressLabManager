@@ -1,4 +1,4 @@
-# Database Models and Schema 🗄️
+# Database Models and Schema
 
 This document explains the core database schema of RadiographXpress and how the different entities interact. The project uses Django's ORM.
 

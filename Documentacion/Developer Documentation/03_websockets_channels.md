@@ -1,4 +1,4 @@
-# WebSockets and Real-time Updates ⚡
+# WebSockets and Real-time Updates
 
 RadiographXpress relies heavily on WebSockets to build a responsive, concurrent experience for Radiologists and Patients. This is achieved using **Django Channels**.
 

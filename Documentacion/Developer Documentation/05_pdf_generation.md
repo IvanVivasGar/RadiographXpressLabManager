@@ -1,4 +1,4 @@
-# PDF Generation (WeasyPrint) 📄
+# PDF Generation (WeasyPrint)
 
 RadiographXpress generates high-fidelity, printable PDF documents of the radiological reports. The core of this functionality lies in **WeasyPrint**, a visual rendering engine for HTML and CSS that outputs PDF.
 

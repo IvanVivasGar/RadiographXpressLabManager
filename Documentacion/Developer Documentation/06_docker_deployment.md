@@ -1,4 +1,4 @@
-# Docker Deployment & Containerization 🐳
+# Docker Deployment & Containerization
 
 This guide covers how the project is orchestrated for deployment using Docker, abstracting away system-level dependencies.
 

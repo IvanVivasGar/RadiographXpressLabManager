@@ -1,4 +1,4 @@
-# Diagrama de Entidad-Relación (ERD) 🗄️
+# Diagrama de Entidad-Relación (ERD)
 
 A continuación se presenta el diagrama detallado de la base de datos de RadiographXpress. El sistema utiliza el ORM de Django, apoyándose fuertemente en relaciones "One-to-One" con el modelo estándar de Autenticación (`auth.User`) para manejar los perfiles y roles.
 

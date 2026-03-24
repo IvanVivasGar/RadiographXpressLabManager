@@ -10,7 +10,7 @@ Tu cuenta es administrada de forma interna; deberás iniciar sesión con las cre
 Es mandatario revisar tu perfil para poder entregar resultados válidos:
 1. Ve a las opciones de perfil.
 2. **Foto de perfil:** Puedes actualizar tu fotografía.
-3. ⚠️ **Firma Electrónica / Firma Digital:** Como obligación, puedes y debes cargar el archivo (usualmente PNG transparente) que contiene tu firma digital o autógrafa escaneada, ya que esta se inyectará automáticamente en los documentos **PDF** de todos los estudios que dictamines. Solo se admiten archivos en formato de imagen aprobado.
+3. **Firma Electrónica / Firma Digital:** Como obligación, puedes y debes cargar el archivo (usualmente PNG transparente) que contiene tu firma digital o autógrafa escaneada, ya que esta se inyectará automáticamente en los documentos **PDF** de todos los estudios que dictamines. Solo se admiten archivos en formato de imagen aprobado.
 
 ---
 

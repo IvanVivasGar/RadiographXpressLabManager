@@ -37,8 +37,8 @@ En tu Dashboard encontrarás:
 
 Tu tablero principal te permite visualizar todos los estudios radiológicos que te han realizado, segmentados por estado:
 
-- 🔒 **En Progreso:** El radiólogo está interpretando tu estudio actualmente. Aún no está listo.
-- 🟢 **Completado:** El reporte radiológico está listo y firmado.
+- **En Progreso:** El radiólogo está interpretando tu estudio actualmente. Aún no está listo.
+- **Completado:** El reporte radiológico está listo y firmado.
 
 ### Ver Detalle de un Estudio
 1. Encuentra el estudio completado en tu lista y haz clic en él.

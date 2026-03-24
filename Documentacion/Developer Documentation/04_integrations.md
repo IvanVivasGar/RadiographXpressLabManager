@@ -1,4 +1,4 @@
-# Third-Party Integrations 🔌
+# Third-Party Integrations
 
 RadiographXpress relies on external systems for storing medical media and fetching DICOM/PACS data.
 
