@@ -62,26 +62,85 @@ El proyecto cubre los siguientes requerimientos: <br>
 19. RNF019: El sistema deberá cumplir con la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados.
 20. RNF020: El sistema deberá cumplir con la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.
 21. RNF021: El sistema deberá cumplir con las regulaciones siguientes(para en caso de tener pacientes de la UE o de los EUA): GDPR, HIPAA (Ley de Portabilidad y Responsabilidad de Seguros de Salud en Estados Unidos).
-22. RNF022: El sistema debe admitir el uso de autenticación de multiple factor, con herramientas como Google Authenticator o Authy.
 
 ## Guía de uso e instalación
+
 ### Requisitos previos
+- **Python 3.10 o superior**
+- **pip** (gestor de paquetes de Python)
+- **Node.js y npm** (para la instalación de dependencias opcionales)
+- **Docker y Docker Compose** (recomendado para despliegue en contenedores)
 
 ### Instalación
 
+1. Clona el repositorio:
+   ```bash
+   git clone <URL_DEL_REPOSITORIO>
+   cd radiograph-xpress/radiographxpress
+   ```
+
+2. Crea y activa un entorno virtual de Python:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # En Windows usa: venv\Scripts\activate
+   ```
+
+3. Instala las dependencias del proyecto:
+   ```bash
+   pip install -r requirements.txt
+   ```
+   *(Opcionalmente, puedes ejecutar `../install_dependencies.sh` desde la raíz para instalar dependencias adicionales de Node).*
+
+4. Configura las variables de entorno basándote en el archivo de ejemplo:
+   ```bash
+   cp .env.example .env
+   ```
+
+5. Aplica las migraciones de la base de datos:
+   ```bash
+   python manage.py migrate
+   ```
+
 ### Ejecución
 
+**En entorno de desarrollo local:**
+
+Inicia el servidor de desarrollo de Django:
+```bash
+python manage.py runserver
+```
+
+El sistema estará disponible en `http://localhost:8000/`.
+
+**Con Docker:**
+
+También puedes levantar el entorno de manera compacta usando Docker Compose:
+```bash
+docker-compose up --build
+```
+
 ## Estructura del proyecto
+- `Documentacion/`: Contiene todos los documentos y diagramas relacionados al proyecto.
+- `radiographxpress/`: Directorio principal del código fuente.
+  - `core/`: Configuración principal y funcionalidades compartidas del sistema.
+  - `patientsDashboard/`: Portal e interfaz para los pacientes.
+  - `doctorsDashboard/`: Portal e interfaz para médicos especialistas que analizan estudios.
+  - `associateDoctorDashboard/`: Portal e interfaz para médicos remitentes (asociados).
+  - `assistantDashboard/`: Portal e interfaz para los asistentes administrativos.
+  - `requirements.txt`: Archivo con las dependencias necesarias de Python.
+  - `Dockerfile` / `docker-compose.yml`: Archivos de configuración para contenedores.
 
 ## Tecnologías utilizadas
-Front-end: Django<br>
-Back-end: Django<br>
-Base de datos: SQLite<br>
+**Front-end:** HTML, CSS, JavaScript, Plantillas de Django (Django Templates)<br>
+**Back-end:** Python, Django<br>
+**Base de datos:** SQLite (por defecto para entorno de desarrollo)<br>
+**Despliegue e Infraestructura:** Docker, AWS (Amazon Web Services)<br>
+**Procesamiento:** WeasyPrint (Generación de PDF de reportes médicos)
 
 ## Interfaces
 
-Figma: https://www.figma.com/design/0c7bCiPXTCz5loS00IP4qp/Radiograph-Xpress?node-id=0-1&t=GVjoagr6QOVNSDf7-1
-AWS Demo: http://radiograph-xpress-interfaces.s3-website-us-east-1.amazonaws.com
+Figma: 
+AWS Demo: 
 
 ## Autores y Contacto
 
