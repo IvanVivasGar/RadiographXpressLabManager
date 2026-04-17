@@ -1,0 +1,182 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+% Configuración de colores
+\definecolor{primarycolor}{RGB}{0, 71, 143} % Azul médico / corporativo
+\definecolor{secondarycolor}{RGB}{43, 43, 43}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primarycolor,
+    urlcolor=primarycolor,
+    pdftitle={Manual de Usuario: Staff Interno},
+    pdfauthor={RadiographXpress}
+}
+
+% Formato de encabezado y pie de página
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{secondarycolor}{\small \textbf{RadiographXpress}}}
+\fancyhead[R]{\textcolor{secondarycolor}{\small Manual de Staff Interno}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Formato de títulos
+\titleformat{\section}{\Large\bfseries\color{primarycolor}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{secondarycolor}}{\thesubsection}{1em}{}
+
+% Directorio de imágenes
+\graphicspath{{screenshots/}}
+
+\title{
+    \vspace{-2cm}
+    \includegraphics[width=0.4\textwidth]{logo_placeholder.png} \\ % Reemplazar con el logo real si existe en Overleaf
+    \vspace{1cm}
+    \Huge \textbf{RadiographXpress} \\
+    \Large \vspace{0.5cm} Manual de Usuario y Operaciones: \\ Staff Interno y Panel Principal
+}
+\author{Personal Administrativo, Asistentes y Radiólogos}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty}
+
+\begin{abstract}
+\noindent Este manual está dirigido al personal que labora y opera directamente con el sistema interno de RadiographXpress. Contiene los lineamientos técnicos, flujos de trabajo e instrucciones visuales paso a paso para Administradores de Sistema, Asistentes de mostrador y Médicos Reportadores (Radiólogos).
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARTE 1 - ADMINISTRADOR DEL SISTEMA
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Administrador del Sistema (Django Admin)}
+
+Este perfil está dirigido al Administrador de Negocios o Administrador Técnico. El panel de administración proporciona control total sobre los permisos, usuarios, roles y todos los datos en la base de datos subyacente de RadiographXpress.
+
+\subsection{Acceso al Panel de Control Administrativo}
+El panel de control es un portal oculto y de acceso restringido diseñado exclusivamente para el personal gerencial y de TI.
+
+\begin{enumerate}
+    \item Navega a la URL de administración del sistema (generalmente \texttt{http://[tudominio.com]/admin}).
+    \item Ingresa tus credenciales de superusuario o de staff autorizadas.
+    \item Al ingresar, serás dirigido al Panel Principal donde se listan todas las entidades ("Aplicaciones") de la base de datos de RadiographXpress.
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{admin_dashboard.png}
+    \caption{Vista Principal del Panel de Administración.}
+\end{figure}
+
+\subsection{Gestión de Registros y Roles de Usuario}
+El núcleo del sistema RadiographXpress se basa en \textbf{Grupos} de permisos (\texttt{Groups}). 
+
+\subsubsection{Usuarios (\texttt{Users})}
+\begin{enumerate}
+    \item En la sección \textbf{Authentication and Authorization}, haz clic en \textbf{Users}.
+    \item Aquí verás todos los usuarios registrados en el sistema, sea cual sea su rol.
+    \item \textbf{Modificar un usuario:} Si un usuario olvida su contraseña o necesita ser dado de baja, haz clic en su correo electrónico (o `username`).
+    \begin{itemize}
+        \item \textbf{Cambiar contraseña:} Existe un formulario especializado para cambiar claves de acceso directamente.
+        \item \textbf{Activar/Desactivar:} Desmarcando la casilla \texttt{Active} puedes suspender temporalmente el acceso de un usuario.
+    \end{itemize}
+\end{enumerate}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{admin_users.png}
+    \caption{Gestión general de usuarios del sistema.}
+\end{figure}
+
+\subsubsection{Administración de Perfiles Específicos}
+\textbf{Médicos Reportadores (\texttt{doctorsDashboard}):}
+Si contratas a un radiólogo nuevo, deberás crearle un usuario y asignarlo a este perfil, añadiendo además su Firma Digital.
+
+\vspace{0.5cm}
+\noindent \textbf{Cuidado de los Datos:} Siempre desactiva usuarios (\texttt{Active=False}) en lugar de eliminarlos para mantener la integridad forense y médico-legal del historial.
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARTE 2 - ASISTENTE
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Asistente / Administrativo (Mostrador)}
+
+Como asistente del sistema, eres primordial en el orden de los accesos y de la carga inicial de los pacientes antes de su entrada al RIS/PACS.
+
+\subsection{Inicio de Sesión y Dashboard}
+Inicia sesión con las credenciales proporcionadas. Tendrás herramientas de validación de identidad y alta de perfiles.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{assistant_dashboard.png}
+    \caption{Panel principal (Dashboard) del Asistente.}
+\end{figure}
+
+\subsection{Gestión Manual de Pacientes}
+\begin{enumerate}
+    \item Utiliza la barra superior para buscar pacientes globales por nombre o registro, evitando duplicados.
+    \item \textbf{Creación de Nuevos Pacientes:} Si llega un paciente a realizarse un estudio y no tiene cuenta, haz clic en el formulario pertinente y captura demográficos completos y precisos.
+    \item Al agendar un estudio, este se vincula creando un \texttt{Study Request}.
+\end{enumerate}
+
+\subsection{Validación y Aprobación de Médicos Asociados}
+Para médicos que soliciten darse de alta como Referentes (Asociados), **tú tienes la llave final**. Debes verificar sus licencias antes de aprobarlos en el sistema para que puedan ver los resultados de sus pacientes.
+\begin{itemize}
+    \item Ve al listado de \textit{Pendientes de Aprobación}.
+    \item Verifica la Cédula Profesional en los portales gubernamentales u oficiales locales.
+    \item Haz clic en \textbf{Aceptar} (Vincular). El médico será notificado vía email inmediatamente.
+\end{itemize}
+
+\vspace{0.3cm}
+\noindent \textit{(Nota: Las capturas relacionadas con los correos enviados se encuentran detalladas en el archivo de anexos SMTP y configuraciones adicionales de sistema).}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% PARTE 3 - MÉDICO REPORTADOR (RADIÓLOGO)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Médico de Interpretación (Radiólogo)}
+
+Este es el portal de operaciones de diagnóstico. Como Médico Reportador, aquí dictaminarás, clasificarás y enviarás los resultados a pacientes y médicos tratantes a través de nuestro PACS.
+
+\subsection{Ingreso y Tu Tablero de Trabajo (Worklist)}
+Al ingresar a tu cuenta de radiólogo, visualizarás todas las solicitudes de la clínica en tiempo real. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.9\textwidth]{doctor_dashboard.png}
+    \caption{Dashboard Médico - Worklist y estado de estudios.}
+\end{figure}
+
+\subsection{Firma Digital (Obligatoria)}
+Al configurar tu perfil por primera vez desde las opciones de \textbf{Mi Perfil}, carga el escaneo o archivo digital de tu firma (\texttt{.png} transparente recomendado). Se inyectará automáticamente en los documentos.
+
+\subsection{Bloqueo e Interpretación de un Estudio}
+Debido a que pueden existir múltiples radiólogos trabajando a la vez, se utilizan bloqueos (\textit{Locks}).
+
+\begin{enumerate}
+    \item Ubica un estudio con estado \textbf{"Pending"} y ábrelo.
+    \item A partir de ese segundo, ningún otro radiólogo podrá tomar el estudio (\textit{Bloqueo Inteligente}).
+    \item Redacta la nota médica estructurada: \textit{Descripción clínica, Hallazgos, Conclusiones y Recomendaciones}.
+    \item Una vez presiones Enviar/Finalizar, el sistema firmará y despachará el PDF instantáneamente. El estado pasará a \textbf{"Completado"}.
+\end{enumerate}
+
+\end{document}

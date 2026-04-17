@@ -324,9 +324,12 @@
                     </div>
                     <div class="doctor-verify-details">
                         <div><strong>Cédula:</strong> {{ doc.professional_id|default:"-" }}</div>
-                        <div><strong>Uni:</strong> {{ doc.university|default:"-" }}</div>
+                        <div><strong>Especialidad:</strong> {{ doc.specialty|default:"-" }}</div>
+                        <div><strong>Universidad:</strong> {{ doc.university|default:"-" }}</div>
                         <div><strong>Email:</strong> {{ doc.user.email }}</div>
-                        <div><strong>Tel:</strong> {{ doc.phone|default:"-" }}</div>
+                        <div><strong>Teléfono:</strong> {{ doc.phone|default:"-" }}</div>
+                        <div><strong>Dirección:</strong> {{ doc.address|default:"-" }}</div>
+                        <div><strong>Género:</strong> {{ doc.get_gender_display|default:"-" }}</div>
                     </div>
                     <div class="doctor-verify-actions">
                         <button class="btn-verify approve" data-action="approve">Aprobar</button>

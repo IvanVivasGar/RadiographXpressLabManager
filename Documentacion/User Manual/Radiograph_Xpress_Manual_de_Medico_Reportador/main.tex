@@ -1,0 +1,71 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{float}
+
+% Configuración de colores
+\definecolor{primarycolor}{RGB}{63, 81, 181} % Indigo
+\definecolor{secondarycolor}{RGB}{43, 43, 43}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primarycolor,
+    urlcolor=primarycolor,
+    pdftitle={Manual de Usuario: Médico Reportador},
+    pdfauthor={RadiographXpress}
+}
+
+% Formato de encabezado y pie de página
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\fancyhead[L]{\textcolor{secondarycolor}{\small \textbf{RadiographXpress}}}
+\fancyhead[R]{\textcolor{secondarycolor}{\small Médico de Interpretación}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Formato de títulos
+\titleformat{\section}{\Large\bfseries\color{primarycolor}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{secondarycolor}}{\thesubsection}{1em}{}
+
+% Directorio de imágenes
+\graphicspath{{screenshots/}{company_identity/}}
+
+\begin{document}
+
+% Portada
+\input{titlepage}
+
+\begin{abstract}
+\noindent ¡Bienvenido a tu estación de trabajo en RadiographXpress! Como Médico de Interpretación o Radiólogo en jefe, tienes el rol operativo más crítico: dictaminar las imágenes médicas, redactar los hallazgos clínicos y sellar legalmente los estudios. Este manual documenta tu experiencia técnica a través del entorno seguro y la consola de reportes.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% Secciones
+\input{sections/01_acceso_y_firma_digital}
+\input{sections/02_inicio_de_sesion}
+\input{sections/03_worklist_y_dashboard}
+\input{sections/04_bloqueo_de_estudios}
+\input{sections/05_interfaz_de_reportes}
+\input{sections/06_historial_reportes}
+
+\vspace{1cm}
+\begin{center}
+\textit{Si detectas un fallo técnico durante la renderización de un reporte o un error severo en un paciente, por favor eleva un ticket inmediato con Gerencia.}
+\end{center}
+
+\end{document}

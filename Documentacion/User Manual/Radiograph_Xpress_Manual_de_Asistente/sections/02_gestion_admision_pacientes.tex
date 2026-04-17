@@ -1,0 +1,36 @@
+\section{Gestión y Admisión de Pacientes}
+
+La actividad cardinal en el módulo de Asistente es la recepción en ventanilla ("Mostrador"). Si un paciente se presenta a realizarse un examen, tu responsabilidad es ingresarlo correctamente al sistema de imagenología (RIS/PACS).
+
+\subsection{El Buscador Global (Control de Duplicados)}
+
+\textbf{Norma Operativa Crucial:} Para preservar la integridad del historial clínico, \textbf{está estrictamente prohibido crear pacientes duplicados}.
+\begin{enumerate}
+    \item Antes de siquiera considerar registrar un nombre nuevo, debes situarte en la \textbf{barra de búsqueda global} alojada en tu menú superior.
+    \item Teclea el nombre, apellidos, o el correo electrónico proporcionado por la persona en mostrador.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{screenshots/global_search.png}
+        \caption{Utilizando la barra de búsqueda global para localizar expedientes previos.}
+    \end{figure}
+    \item \textbf{Si el paciente APARECE (Registro Existente):} Significa que el paciente ya se había registrado por cuenta propia en internet, o visitó previamente la clínica. Haz clic en su tarjeta, y desde su perfil ya instaurado generas la orden del nuevo estudio.
+    \item \textbf{Si el paciente NO APARECE (Nuevo Ingreso):} Únicamente bajo este supuesto debes proceder al flujo de creación de expediente detallado abajo.
+\end{enumerate}
+
+\subsection{Creación de Nuevos Pacientes}
+
+Si agotaste la búsqueda global y el paciente es auténticamente nuevo en la clínica:
+\begin{enumerate}
+    \item En tu panel principal, localiza y haz clic en el botón \textbf{"Crear Paciente"} (o "Registrar Paciente").
+    \item Aparecerá un formulario en pantalla exigiéndote documentar sus datos demográficos minuciosamente: Nombre completo alineado a su identificación oficial, Correo electrónico, Teléfono y Fecha de nacimiento.
+    \item Completa todo el formulario y confírmalo. Un nuevo perfil integral nace en la base de datos de la clínica.
+\end{enumerate}
+
+\subsection{Orden de Estudio (Study Request)}
+
+Una vez que el paciente asienta frente a ti y se verifica su entidad:
+\begin{enumerate}
+    \item Dirígete al botón para entablar una "Solicitud de Estudio" (\textit{Study Request}) sobre el paciente deseado.
+    \item Selecciona en el catálogo interno o escribe la modalidad exacta del examen que va a practicarse (ej. Rayos X de Tórax, Mastografía, etc.).
+    \item Al guardar y despachar la orden, el sistema la proyecta instantáneamente al equipo biomédico. \textbf{El PACs/RIS lo asimilará} y quedará todo entrelazado y preparado para el técnico de radiología.
+\end{enumerate}

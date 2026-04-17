@@ -109,7 +109,7 @@ class StudyRequest(models.Model):
     ]
 
     id_solicitud_estudio = models.AutoField(primary_key=True)
-    diagnosis = models.CharField(max_length=100)
+    diagnosis = models.CharField(max_length=100, null=True, blank=True)
     requested_study = models.CharField(max_length=100, choices=REQUESTED_STUDY_CHOICES)
     pdf_password = models.CharField(max_length=18, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True)

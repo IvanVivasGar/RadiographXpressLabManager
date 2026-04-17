@@ -21,10 +21,11 @@ class AssociateDoctorSignupForm(forms.ModelForm):
     # Associate Doctor specific fields
     professional_id = forms.CharField(label='Cédula Profesional', max_length=100)
     university = forms.CharField(label='Universidad', max_length=100)
+    specialty = forms.CharField(label='Especialidad', max_length=100)
 
     class Meta:
         model = AssociateDoctor
-        fields = ['address', 'phone', 'university', 'professional_id']
+        fields = ['address', 'phone', 'university', 'professional_id', 'specialty']
         labels = {
             'address': 'Dirección',
             'phone': 'Teléfono',

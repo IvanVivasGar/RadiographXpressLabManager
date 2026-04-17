@@ -186,7 +186,6 @@ class Command(BaseCommand):
                         conclusions="No significant pathologies detected.",
                         recommendations="Follow up in 6 months.",
                         date=datetime.now().date() - timedelta(days=random.randint(1, 30)),
-                        password="pass",
                         doctor_in_charge=random.choice(reporting_doctors)
                     )
                 

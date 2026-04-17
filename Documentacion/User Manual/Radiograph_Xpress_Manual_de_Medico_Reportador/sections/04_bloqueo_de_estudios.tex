@@ -1,0 +1,25 @@
+\section{Gestión y Bloqueo Inteligente de Estudios}
+
+En esquemas multi-médico, existe un riesgo inherente de colisión documental y duplicidad de esfuerzo. Para suprimir matemáticamente la posibilidad de que dos especialistas internos diagnostiquen las imágenes de un mismo paciente a la par o se pisen sus avances lógicos, el sistema blande la lógica estricta del \textbf{Estudio Bloqueado} \textit{(Locking)}.
+
+\subsection{El Tomado de Casos Clínicos (Locking)}
+
+\begin{enumerate}
+    \item Dentro de tu lista de urgencias pendientes, localiza el estudio que deseas diagnosticar y ábrelo visualmente.
+    \item \textbf{Activación por Interacción:} El bloqueo no se inicializa de inmediato. El mecanismo de candado arranca \textbf{en el preciso instante en el que comienzas a escribir} la primera letra dentro de la plantilla del reporte.
+    \item Al empezar a redactar, una notificación emergerá instantáneamente en la esquina superior derecha indicándote que has tomado posesión del estudio. Su estatus evolucionará inmediatamente a \textbf{"En Progreso"}.
+    \item \textbf{Autoguardado en Sesión:} Todo progreso y texto redactado quedará guardado dinámicamente en tu sesión activa en la plataforma, pudiendo retomar el estudio desde tu buzón personal de "En Progreso" sin perder la línea investigativa.
+    \item \textbf{Candado Maestro:} Desde la fracción precisa del bloqueo, dicho dictamen clínico \textbf{quedará blindado exclusivamente bajo tu titularidad}. Los demás médicos verán desvanecerse el requerimiento de su bandeja principal o verán tu nombre como el tratante absoluto de la tarea.
+\end{enumerate}
+
+\textbf{PRECAUCIÓN SEVERA: DESTRUCCIÓN DE PROGRESO POR SESIÓN}
+
+Abordar un estudio mediante el "Lock" es un contrato lógico asertivo. \textbf{Si tú, como operador responsable, cierras intempestivamente el navegador, o pulsas en "Cerrar sesión" voluntariamente mientras abrigas en tu bandeja un estudio en la fase "En Progreso", ocurrirá lo inevitable:}
+
+El servidor, por medidas de sanidad de la base y asumiendo negligencia temporal, reventará el bloqueo forzadamente, restituyendo la tarjeta virgen devuelta hacia la canasta universal global para que otro médico pueda salvarla. Consecuentemente, todo vestigio textual, captura borrador o texto incidental que habías introducido previo al cierre de sesión caprichoso \textbf{será obliterado y desechado perpetuamente al vacío sin rastro}. Tu progreso quedará pulverizado si no lo finalizas formalmente a través del botón de guardado.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.45\linewidth]{screenshots/study_lock.png}
+    \caption{Etiqueta roja que denota que un estudio se halla bloqueado bajo un médico específico.}
+\end{figure}

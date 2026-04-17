@@ -1,0 +1,22 @@
+\section{Listado de Trabajo (Worklist) y Tablero}
+
+Tras corroborar exitosamente tus accesos y tu firma, la primera ventana que te recibirá siempre será tu Dashboard General. Este funge directamente como tu \textbf{Worklist} institucional: el centro neural donde los equipos de radiología emiten sus salidas y tú las ingestas para diagnosticar.
+
+\subsection{Sincronía Asíncrona PACS}
+
+RadiographXpress funciona comunicándose transversalmente con modalidades externas PACS (ej. de la red integral dcm4chee o Raditech). \textbf{Las actualizaciones fluyen en tiempo real por debajo de la interfaz}, por lo que el tablero parpadeará o se refrescará pasivamente cada vez que llegue un nuevo encargo.
+
+\subsection{Organización del Panel (Pending y Completed)}
+
+Notarás tu pantalla dividida en segmentos estratégicos basados en el estado del dictamen:
+
+\begin{itemize}
+    \item \textbf{Estudios Pendientes ("Pending"):} Representa propiamente la 'bandeja de urgencias' y trabajo neto. Son todos aquellos expedientes y transferencias de imágenes provenientes de los técnicos que han llegado al servidor pero aún \textit{no han sido explorados por ningún doctor}. Si visualizas estudios listados aquí, tu labor principal es tomarlos.
+    \item \textbf{Estudios Terminados ("Completed"):} Es tu propio registro de éxito. Colecciona históricamente la base de tu productividad (estudios que redactaste de inicio a fin satisfactoriamente).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{screenshots/radiologist_dashboard.png}
+    \caption{Tablero de radiólogo con una clara segmentación por progreso de estudio.}
+\end{figure}

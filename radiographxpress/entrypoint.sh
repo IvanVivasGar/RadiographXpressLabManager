@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-echo "⏳ Waiting for PostgreSQL..."
+echo "Waiting for PostgreSQL..."
 while ! python -c "
 import os, psycopg
 try:
@@ -13,10 +13,10 @@ except Exception:
 " 2>/dev/null; do
     sleep 1
 done
-echo "✅ PostgreSQL is ready."
+echo "PostgreSQL is ready."
 
-echo "🔄 Running migrations..."
+echo "Running migrations..."
 python manage.py migrate --noinput
 
-echo "🚀 Starting Daphne (ASGI)..."
+echo "Starting Daphne (ASGI)..."
 exec daphne -b 0.0.0.0 -p 8000 radiographxpress.asgi:application

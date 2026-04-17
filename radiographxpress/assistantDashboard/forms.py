@@ -5,6 +5,7 @@ when creating new Study Requests from the front-desk interface.
 """
 from django import forms
 from .models import StudyRequest
+from associateDoctorDashboard.models import AssociateDoctor
 
 
 class StudyRequestForm(forms.ModelForm):
@@ -35,3 +36,7 @@ class StudyRequestForm(forms.ModelForm):
                 'class': 'form-input',
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(StudyRequestForm, self).__init__(*args, **kwargs)
+        self.fields['id_associate_doctor'].queryset = AssociateDoctor.objects.filter(is_verified=True)

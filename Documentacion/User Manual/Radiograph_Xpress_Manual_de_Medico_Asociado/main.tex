@@ -1,0 +1,70 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{float}
+
+% Configuración de colores
+\definecolor{primarycolor}{RGB}{0, 150, 136} % Verde oscuro/Teal médico asociado
+\definecolor{secondarycolor}{RGB}{43, 43, 43}
+
+% Configuración de hipervínculos
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primarycolor,
+    urlcolor=primarycolor,
+    pdftitle={Manual de Usuario: Médico Asociado},
+    pdfauthor={RadiographXpress}
+}
+
+% Formato de encabezado y pie de página
+\pagestyle{fancy}
+\setlength{\headheight}{14pt}
+\fancyhf{}
+\fancyhead[L]{\textcolor{secondarycolor}{\small \textbf{RadiographXpress}}}
+\fancyhead[R]{\textcolor{secondarycolor}{\small Manual para Médicos Asociados}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Formato de títulos
+\titleformat{\section}{\Large\bfseries\color{primarycolor}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{secondarycolor}}{\thesubsection}{1em}{}
+
+% Directorio de imágenes
+\graphicspath{{screenshots/}{company_identity/}}
+
+\begin{document}
+
+% Portada
+\input{titlepage}
+
+\begin{abstract}
+\noindent ¡Bienvenido a RadiographXpress! Este manual está diseñado para acompañarte como \textbf{Médico Asociado} o Referente. A través de este portal, podrás recibir, consultar y descargar de forma segura y en tiempo real los resultados e imágenes médicas de tus pacientes vinculados, dictaminados por nuestros especialistas.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+% Secciones
+\input{sections/01_registro_validacion_ingreso}
+\input{sections/02_dashboard_principal}
+\input{sections/03_visualizacion_revision_clinica}
+\input{sections/04_pacientes_vinculados_revocaciones}
+\input{sections/05_cambios_contrasenas}
+
+\vspace{1cm}
+\begin{center}
+\textit{Si tienes problemas técnicos durante la verificación de tu cuenta o necesitas actualizar tu perfil colegiado, por favor contacta al número oficial de soporte administrativo de la clínica.}
+\end{center}
+
+\end{document}

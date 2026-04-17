@@ -1,0 +1,21 @@
+\section{Validación de Médicos Externos}
+
+Como medida de seguridad fundamental en RadiographXpress, cuando profesionales médicos foráneos (Médicos Asociados o Referentes) intentan darse de alta desde el portal web público, el sistema mantiene sus cuentas "Congeladas" u ocultas de los pacientes hasta que una autoridad interna valide su capacidad para ejercer. **Tú posses la llave de autorización final.**
+
+\subsection{Proceso de Filtro y Aprobación}
+
+Para revisar el embudo de médicos en cola:
+\begin{enumerate}
+    \item Navega por tu menú hacia la sección denominada \textbf{"Verificación de Médicos"} (Doctor Verification).
+    \item Aparecerá un listado de cuentas con el estatus de \textit{Pendiente de aprobación}. Cada tarjeta o fila exhibirá información clave para tu tarea: \textbf{Nombre}, \textbf{Especialidad} y \textbf{Cédula Profesional}.
+    \item Al hacer clic sobre cualquier doctor pendiente, verás su ficha completa.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.6\linewidth]{screenshots/validate_doctor.png}
+        \caption{Ventana de verificación de Doctor Asociado.}
+    \end{figure}
+    \item \textbf{Cruce Gubernamental Obligatorio:} Copia la Cédula Profesional proveída por el sujeto y dirígete al sitio web o libro oficial del Registro Nacional de Profesionistas. 
+    \item Cerciórate de que el nombre empaten cabalmente con la Cédula y que su especialidad esté certificada formalmente en su documento.
+    \item \textbf{Caso Favorable:} Si los datos son legítimos y su licencia existe, oprime el botón \textbf{"Aceptar"} (o Vincular). Acto continuo, el Médico recibirá un email de confirmación dándole la bienvenida, y su nombre aparecerá finalmente disponible en los buscadores de nuestros pacientes.
+    \item \textbf{Caso Negativo:} Si presumes de usurpación de funciones, encuentras diferencias irreconciliables en los campos nominales, o la Cédula no se haya vigente, debes actuar protegiendo a la red. Oprime firmemente \textbf{"Denegar"}. El intento de cuenta se invalidará perdiendo todo el control de registro futuro con ese correo.
+\end{enumerate}

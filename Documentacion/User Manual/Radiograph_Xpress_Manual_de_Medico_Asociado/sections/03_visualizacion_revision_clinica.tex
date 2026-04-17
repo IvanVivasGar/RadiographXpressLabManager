@@ -1,0 +1,39 @@
+\section{Visualización y Revisión Clínica}
+
+Al oprimir o hacer clic sobre una de las tarjetas de tus pacientes desde el Dashboard, iniciarás una inmersión directa al cuadro médico dictaminado dentro de la sucursal de RadiographXpress.
+
+Existen estados dinámicos dentro de cada bloque, te sugerimos distinguir visualmente entre dos:
+\begin{itemize}
+    \item \textbf{Estudio en Progreso:} La recolección biométrica de tu paciente terminó, y nuestro médico radiólogo tiene ahora las imágenes en su dispositivo interno realizando el dictamen en vivo. Esta tarjeta aparecerá bloqueada con un ícono de advertencia de labor. (No es consultable temporalmente debido a su incompletitud médica).
+    \item \textbf{Completado:} El documento visual está plenamente redactado, verificado y subido con la firma médica del turno. La tarjeta es libre de clicarse.
+\end{itemize}
+
+\subsection{Inspección Del Dictamen}
+
+Al abrir la tarjeta "Completada":
+\begin{enumerate}
+    \item La pantalla se expandirá revelando la estructura metodológica que utilizó nuestro homólogo radiólogo al calificar tu orden y las impresiones capturadas.
+    \item En la misma hoja de información, estarás provisto de la transcripción técnica con los siguientes rubros:
+    \begin{itemize}
+        \item \textbf{Descripción del paciente:} Las observaciones o historia clínica relevante proporcionada al momento del estudio.
+        \item \textbf{Hallazgos:} Datos duros y mediciones detalladas arrojadas por las imágenes y el análisis técnico.
+        \item \textbf{Conclusión:} Apreciación cualitativa, diagnóstico o el veredicto final.
+        \item \textbf{Recomendaciones:} Posibles acciones a seguir o sugerencias adicionales del especialista.
+    \end{itemize}
+    \item Al final del reporte, visualizarás la identificación institucional con la \textbf{firma del doctor} certificando la labor, al igual que los datos correspondientes de nuestro radiólogo (nombre, especialidad y cédula profesional) y el membrete de contacto.
+    \item En la porción superior o lateral se alojarán las capturas del PACS (visor nativo), el cual de darle una pulsación te redireccionará en formato amplio.
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.5\linewidth]{screenshots/digital_study.png}
+        \caption{Visualizador interactivo de estudios de RadiographXpress.}
+    \end{figure}
+\end{enumerate}
+
+\subsection{Restricción de Privacidad y Descarga de PDF}
+
+Como política fundamental de privacidad de RadiographXpress, el control absoluto del expediente clínico reside en el paciente (propietario legal de los datos). Para garantizar la gobernanza de los pacientes sobre su información:
+\begin{itemize}
+    \item \textbf{Los Médicos Asociados NO tienen la capacidad de descargar el archivo PDF oficial} de los estudios directamente a sus computadoras o dispositivos.
+    \item Puedes examinar en vivo y a detalle todo el caso y las imágenes; sin embargo, no existirá el botón de "Descargar PDF" para tu rol.
+    \item Si requieres una copia física o un documento extraíble para tu expediente interno (EMR), el paciente deberá descargarlo desde su propio portal y facilitártelo personalmente a su total discreción.
+\end{itemize}

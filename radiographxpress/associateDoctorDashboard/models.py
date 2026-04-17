@@ -33,6 +33,7 @@ class AssociateDoctor(models.Model):
     # Critical security field: enforced unique across the database
     professional_id = models.CharField(max_length=100, null=True, blank=True, unique=True)
     university = models.CharField(max_length=100, null=True, blank=True)
+    specialty = models.CharField(max_length=100, null=True, blank=True)
     
     # State tracking flags
     is_email_verified = models.BooleanField(default=False)
