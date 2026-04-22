@@ -41,8 +41,8 @@ El proyecto cubre los siguientes requerimientos: <br>
 16. RF014: El sistema deberá asignar los estudios automaticamente, acorde al asunto del estudio llenado en la solicitud de estudio y la especialidad del doctor.
 
 ### Requerimientos No Funcionales:<br>
-1. RNF001: El sistema debe encriptar la base de datos para proteger datos sensibles del paciente, doctor 'aspociado', asi como de la empresa.
-2. RNF002: El estudio (radiografía y análisis) deben de estar protegidos bajo contraseña.
+1. RNF001: El sistema debe encriptar la base de datos para proteger datos sensibles del paciente, doctor 'asociado', asi como de la empresa.
+2. RNF002: El estudio en formato PDF (radiografía y análisis) deben de estar protegidos bajo contraseña.
 3. RNF003: El sistema debe de tener como máximo, 2 horas al mes de inutilidad para el mantenimiento.
 4. RNF004: El sistema debe recibir mantenimiento el día (por determinar), a las (hora por determinar).
 5. RNF005: En caso de falla, el sistema no puede estar inoperante por más de 1 hora.
