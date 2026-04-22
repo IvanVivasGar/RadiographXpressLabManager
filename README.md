@@ -133,14 +133,9 @@ docker-compose up --build
 ## Tecnologías utilizadas
 **Front-end:** HTML, CSS, JavaScript, Plantillas de Django (Django Templates)<br>
 **Back-end:** Python, Django<br>
-**Base de datos:** SQLite (por defecto para entorno de desarrollo)<br>
+**Base de datos:** PostgreSQL<br>
 **Despliegue e Infraestructura:** Docker, AWS (Amazon Web Services)<br>
 **Procesamiento:** WeasyPrint (Generación de PDF de reportes médicos)
-
-## Interfaces
-
-Figma: 
-AWS Demo: 
 
 ## Autores y Contacto
 
